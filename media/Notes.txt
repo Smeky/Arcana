@@ -1,0 +1,1152 @@
+					
+																		
+									Ability system
+										
+										Main Idea:
+											- Flexible ability system which allows defining abilities in Lua. By flexible I mean 
+											  a lot of different types and options
+										
+											Ability types:
+												- Offensive
+												- Defensive
+												- Self cast
+												- Instant
+												- Casted
+												- Projectile based
+												- Utility 	( spawning temporary object, spawning temporary entities, etc. )
+										
+										Main goal:
+											- Lua based
+												-> Possible to modify during runtime
+												
+											- Flexible
+												-> A lot of possible options for abilities 
+												
+											- Mod-able 
+												-> Ability to add new or modify current abilities ( how/why would you change current ones? )
+												
+										
+										Ideas:
+											- Multiple statements to call functions
+												-> onHit, onCast, ...
+											- Applying effect to caster/target
+										
+										
+										
+										Requirements:
+											- Data
+												-> ID, Name, Resource cost, type, description
+											- 
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+									Ideas for abilities:								
+									
+										Some basic ones:
+											- Blink					-> Changes position of caster to destination ( need to define the destination )
+											- Fireball				-> Spawns projectile based on parents stats, faction, etc.
+											- Poison bomb			-> Same as fireball, AoE, onHit effect
+											- Piercing arrow		-> Projectile, despawn only on collision with object / fly distance 
+											- Ice shield			-> Self buff, slows melee enemies on being hit
+											
+											
+																		
+																		
+																		
+									Use cases:
+										
+										Scenario:
+											- Player uses some instant, damaging spell against closest ( radius limit ) enemy. 
+											  The spell also applies DoT debuff to enemy
+											
+										
+											Ability = {
+												data 	= {
+													cost		= 10;
+													castTime	= 0.0;
+													type		= 1;		( offensive )
+													name		= "Fire blast"
+													description	= "Blah blah"
+													icon		= "TEXTURE_FIRE_BLAST"
+												}
+											
+												onCast 	= function( casterID, destX, destY )			
+														local targetID = myWorld:getClosestCharacter( casterID, 250 )
+													
+														local minDmg, maxDmg
+														local charStats	= myWorld:getCharacaterData( casterID )
+													
+														myWorld:attackEnemy( casterID, targetID, dmg, spellType_crit )
+													
+														myWorld:applyEffect( targetID, effectTable )
+													end						
+												
+											}
+																		
+		
+																		
+																		
+																		
+									Working with player abilities in interface:
+										
+										Reqs.:
+										
+											[ DONE ] - Ability button in the ability bar
+											- Tooltips
+											[ DONE ] - Cooldown display
+											[ DONE ] - Casting bar
+											
+																		
+																		
+																		
+																		
+																		
+										Cooldown display over the ability button:
+											Options:
+												- New class derived from ButtonImage ( would handle cooldown display logic on its own )
+													-> Less heavy, less power ( unable to specify several things from lua )
+												- New class but specified through lua ?
+												- Text wrapper inside interface system changed each frame 
+													-> More heavy, more power 
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+								OK	Particle system
+								OK	De / Buffs
+									Melee attacks
+								OK	Upgrades
+								OK	Leveling
+								OK	Level progression
+								OK	Loot system
+								OK	Item auto-equip on pick-up
+								OK	Facing direction on casting
+									
+									
+									
+									
+									Pathfining
+									Multiple tile types ( currently only 2 are possible )
+									Options
+								OK	Z-buffer adjustable order
+									AI using abilities
+									AoE effects on the ground
+																		
+																		
+																		
+																		
+																		
+
+																		
+																		
+						
+																		
+																		
+																		
+									Loot system
+									
+										Goal:
+											- Zone based loot		= in the whole zone ( multiple levels )
+											- Level based loot		= from all enemies inside specific level
+											- Enemy based loot		= only from specific kind of enemies
+											- Object based loot		= only from specific objects 			( crates .. )
+											
+											- Drop chance based		= Every item will have some drop chance
+											- Level based			= Every item will have level. Chance is highest if the monster that item drops from is of the same level
+
+										Basics:
+											- Loot table based 
+											- Items divided in to "item type tree" 
+											- Loot tables are stored inside enemy ( character )
+												-> Whenever enemy dies, entity system looks if enemy has loot talbe in it. If so, it gives it to the loot system
+												-> Loot system drops the item based on enemy's loot table and level
+										
+										
+										
+										
+										
+										
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+										Effects
+										
+											Goals:											
+												- Stored inside character
+												- Made out of lua table
+												- Effect manager for creating effects from table, handling their functions
+												- They should time based and event based 
+													-> Event based will go off on some event ( ex. leaving some area )
+												- 3 kinds of functions:
+													-> onAplication, onAction, onRemove
+												- Ability to change parents stats
+													-> Needs to store stat adjustment ID
+												
+																		
+																		
+																		
+											
+																		
+																		
+																		
+																		
+											Design of effect:
+												
+												effect = {
+													ID 			= "EFFECT_SLOW_FROSTSHIELD"
+													livetime	= 1.0
+													ticktime	= 0.5
+													texture		= "GUI_ICON_BLABLA"
+													type		= 0 / 1
+													sub-type	= 0 default, 1 stat, event
+													
+													eventID		= 
+													
+													stat		= {
+														statindex
+														Operation
+														Value
+													}
+													
+													functions 	= {
+														onAplication
+														onAction = function( parent, bonus ) end
+														onRemove
+													}
+												}
+																	
+
+											Effect
+											EffectStat
+											EffectEvent
+																		
+																		
+																		
+											Effect types:
+
+												= Can be done by tick and onAction()
+												- DoT
+												- HoT
+												
+												= Can be done by storing stat adjustment ID in new variable
+												- Stat adjustment
+												- Damage reduction
+												- Damage reflection
+												- Damage multiplier
+												- Same for heal
+												
+												= 
+												- Effect on damage taken
+												
+												
+												
+												= Can be done by bools
+												- Immunity 
+												- Projectile immunity
+												- Spell immunity
+												- Melee immunity
+												- Effect immunity														
+																		
+																		
+																		
+											std::vector<CEffect*>	actionEffect[ allEffectTypes ] 							
+																		
+																		
+																		
+																		
+							
+																		
+																		
+																		
+										Upgrade system:
+											
+											Goal:
+												
+												- Permanent upgrades that can be purchased for runestones
+												- Upgrades change anything in game
+													-> Player stats
+													-> Ability improvements and unlocks
+													-> Monster adjustments
+													-> Event rarity
+													-> Quest rewards
+												- Level based upgrades ( from 0 to xx )
+												- Tree based
+												- Tooltips
+												
+											
+											Requirements:
+												
+												- New window and interactable object
+												- Upgrade manager
+													-> Loads / saves upgrades
+													-> Handles buying upgrades
+													-> Handles unlocking upgrades
+													-> Handles upgrade logic
+												
+											
+																		
+																		
+											Gui upgrade manager
+
+												Goal:
+													
+													OK - Displaying locked / unlocked upgrades as buttons
+													OK - Displaying current / maximum level of upgrade
+													- Buying upgrades on click
+													- Tooltips
+																		
+															
+															
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+									Improved maps:
+										
+										Goal:
+										
+											- Multiple layer based tile supportz
+												-> Two ways: Multiple tile layers and multiple sprites in a single tile
+											
+											- Try lightweight tile rendering 
+												-> Using vertexes instead of sprites
+												
+											- Support for map stack
+												-> Push multiple map on top of the stack, update/render only the top one
+												-> Caves / Dungeons / Houses / etc..
+												
+												= Entity system needs the exact same thing
+												
+											- Collision detection with tiles based on indexing
+												-> Merge with spatial system might be required to reduce amount of code
+												
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+									Map stack
+									
+										Goal:
+										
+											- Stack of maps managed by map ID 
+											- Ability to push maps to stack and move maps to the top of the stack
+											- 
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+	
+																		
+																		
+										More flexible objects
+
+											Goal:
+											
+												- Movement specified in lua, handled in C ( ie. floating objects )
+												- Sequence based objects
+													-> Multiple phases
+													-> For example initial sequence of spawners
+												
+																		
+																		
+																		
+																		
+																		
+										Ai component lua table
+										
+											ai = {
+												ID 		= ""
+												data	= {
+												
+												};
+											};
+																		
+																		
+																		
+																		
+																		
+																				
+																		
+																		
+																		
+																		
+										Wave automatization
+										
+											Goal:
+												
+												- Automatic wave progression that is not based on delayed messages but timer instead
+												
+											Requires:
+											
+												- Managing timer between waves
+												- Managing message sending for each spawn
+												- Beginning on message "LevelStart"
+													-> Possibly managing this message as well
+												
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+											Z-buffer improvements
+											
+												Goal:
+												
+													- Drawing stuff bellow everything or above everything without considering
+													  z's in different layers 
+																		
+																		
+																		
+												Problems:
+												
+													- Particles
+														-> How they should be ordered
+														-> There is multiple options of z-buffer ( based on parents, based on its own )
+															
+
+														= emitter can have range of z-buffer layers that are chosen at random
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+									Color modulation for sprite wrappers
+
+										Goal:
+										
+											- Ability to set color modulation 
+											- Ability to remove color modulation
+												-> Needs to be exact one that was added
+												
+										Requirements:
+											
+											- On color removal check if the color is the same ( color removal needs color as arg )
+											
+											
+										Ideas:
+											
+											- Multi color modulation?
+												-> Vector of all color modulations
+												-> All being applied
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+																		
+									

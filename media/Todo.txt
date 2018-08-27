@@ -1,0 +1,62 @@
+
+Priorities: 1 - 10 	( 10 is the most important - should have been already done, slacker )
+
+
+1 - Move window creation data to Lua
+Done 6 - Add circle support to the game	-> Structure, collision, operators, ..
+4 - Add arrow selector to main menu so you can select buttons by arrow keys
+7 - Fix the problem with map switching and keeping all enemies, objects and projectiles ( should be freezed )
+6 - Fix adding more lua functions of the same type to the same entity ( only one is possible atm )
+8 - Add rarity roll for object with spawn rarity
+Done 8 - Set rounded position ( int ) for CDimensional 	-> Used mainly by GUI
+7 - Fix problem with creating new tooltip and immediately destroying it on item auto-equip  
+2 - Add return bool value to reverseWindowShown/Active
+5 - Flexible tile size ( loaded from Lua file )
+4 - Clean function for creating button from lua table inside interface ( there is a weird order of things )
+8 - Fix removing lua functions inside abiltiy manager ( crashes on removing functions by ability - constructor )
+7 - Add class for storing color and color modulation ( Maybe add some system that will allow it to store multiple colors and modulate through them based on some velocity? ) , ( could be used by sprite wrapper as well )
+Done 10 - Remove tiles from CEntity, handle collision detection inside map itself ( map will find tiles near entity by indexing entity's position )
+Done 6 - Change loading sf::Vector2f from lua table inside Utility so it will load it from table on its own under specific name and give it option to load it with/out keys ( x, y )
+7 - Magic find
+6 - Think about idea of managing adjustable size for sprite wrapper ( could be somehow relative to parents size - scale based ? )
+Done 10 - Rewrite code for Gui element active and shown. Active should be still shown
+4 - Figure out a new way of collision detection. Current one sometime glitches out and sets wrong position
+6 - Clean up EntitySystem::AttackTarget function
+
+10 - Level start messages ( some automatic system is needed )
+		
+7 - Setup a way to spawn particles only
+7 - Setup a way to spawn particles on projectiles despawn without the need of making new lua function
+		
+
+Fix collision detection inbetween solid objects ( ie. tiles, etc. )
+	- Whenever collision happends instead of immidiet position adjustment, look of position that would be used is free.
+	- In case the position is not free, use some algorithm based on increasing raidius to find free position.
+	- Don't forget to prevent looking for position outside the map
+		
+		
+		
+New map generation notes:
+
+	- Let the generator to handle spawning objects
+		
+		
+Inventory notes:
+	
+	- White texture for item rarity border -> Recolored in code 
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

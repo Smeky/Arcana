@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Arcana" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Arcana" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DDEBUG" />
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Arcana" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-Wall" />
+			<Add option="-g" />
+			<Add option="-fexceptions" />
+			<Add option="-DSTATIC_SFML" />
+			<Add directory="../_Libs/SFML-2.3/include" />
+			<Add directory="../_Libs/lua-5.3_Win32_mingw4_lib/include" />
+		</Compiler>
+		<Linker>
+			<Add library="sfml-graphics" />
+			<Add library="sfml-window" />
+			<Add library="sfml-audio" />
+			<Add library="sfml-system" />
+			<Add library="..\_Libs\lua-5.3_Win32_mingw4_lib\liblua53.a" />
+			<Add directory="../_Libs/SFML-2.3/lib" />
+			<Add directory="../_Libs/lua-5.3_Win32_mingw4_lib" />
+		</Linker>
+		<Unit filename="include/AssetHolder.h" />
+		<Unit filename="include/CAbility.h" />
+		<Unit filename="include/CAbilityManager.h" />
+		<Unit filename="include/CAiCharComponent.h" />
+		<Unit filename="include/CAiCompoment.h" />
+		<Unit filename="include/CAnimation.h" />
+		<Unit filename="include/CAssetManager.h" />
+		<Unit filename="include/CButton.h" />
+		<Unit filename="include/CButtonAbility.h" />
+		<Unit filename="include/CButtonImage.h" />
+		<Unit filename="include/CCamera.h" />
+		<Unit filename="include/CCharStat.h" />
+		<Unit filename="include/CCharacter.h" />
+		<Unit filename="include/CCombatText.h" />
+		<Unit filename="include/CCombatTextSystem.h" />
+		<Unit filename="include/CDataTables.h" />
+		<Unit filename="include/CDimensional.h" />
+		<Unit filename="include/CDisplayPlayerStat.h" />
+		<Unit filename="include/CDisplayStats.h" />
+		<Unit filename="include/CEffect.h" />
+		<Unit filename="include/CEffectManager.h" />
+		<Unit filename="include/CEntity.h" />
+		<Unit filename="include/CEntitySystem.h" />
+		<Unit filename="include/CGame.h" />
+		<Unit filename="include/CGuiButton.h" />
+		<Unit filename="include/CGuiElement.h" />
+		<Unit filename="include/CInputSystem.h" />
+		<Unit filename="include/CInterfaceSystem.h" />
+		<Unit filename="include/CInventory.h" />
+		<Unit filename="include/CItemdrag.h" />
+		<Unit filename="include/CLootSystem.h" />
+		<Unit filename="include/CMap.h" />
+		<Unit filename="include/CMapGenerator.h" />
+		<Unit filename="include/CMessage.h" />
+		<Unit filename="include/CMessageListener.h" />
+		<Unit filename="include/CMessageSystem.h" />
+		<Unit filename="include/CParticle.h" />
+		<Unit filename="include/CParticleEffect.h" />
+		<Unit filename="include/CParticleEmitter.h" />
+		<Unit filename="include/CParticleSystem.h" />
+		<Unit filename="include/CPlayer.h" />
+		<Unit filename="include/CProgressiveStat.h" />
+		<Unit filename="include/CProjectile.h" />
+		<Unit filename="include/CRNG.h" />
+		<Unit filename="include/CSceneManager.h" />
+		<Unit filename="include/CScriptSystem.h" />
+		<Unit filename="include/CSpatialSystem.h" />
+		<Unit filename="include/CSpriteWrapper.h" />
+		<Unit filename="include/CTesting.h" />
+		<Unit filename="include/CTextWidget.h" />
+		<Unit filename="include/CTextWrapper.h" />
+		<Unit filename="include/CTile.h" />
+		<Unit filename="include/CTileLayer.h" />
+		<Unit filename="include/CTimer.h" />
+		<Unit filename="include/CTooltip.h" />
+		<Unit filename="include/CTooltipManager.h" />
+		<Unit filename="include/CTrackHealth.h" />
+		<Unit filename="include/CTrackResource.h" />
+		<Unit filename="include/CUpgradeManager.h" />
+		<Unit filename="include/CWidget.h" />
+		<Unit filename="include/CWidgetEffect.h" />
+		<Unit filename="include/CWindow.h" />
+		<Unit filename="include/CWindowCastbar.h" />
+		<Unit filename="include/CWindowInventory.h" />
+		<Unit filename="include/CWorldManager.h" />
+		<Unit filename="include/CZBuffer.h" />
+		<Unit filename="include/CharacterFaction.h" />
+		<Unit filename="include/CharacterStats.h" />
+		<Unit filename="include/Circle.h" />
+		<Unit filename="include/Item.h" />
+		<Unit filename="include/LootTable.h" />
+		<Unit filename="include/LuaWrapper.h" />
+		<Unit filename="include/Utility.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/CAbility.cpp" />
+		<Unit filename="src/CAbilityManager.cpp" />
+		<Unit filename="src/CAiCharComponent.cpp" />
+		<Unit filename="src/CAiCompoment.cpp" />
+		<Unit filename="src/CAnimation.cpp" />
+		<Unit filename="src/CAssetManager.cpp" />
+		<Unit filename="src/CButton.cpp" />
+		<Unit filename="src/CButtonAbility.cpp" />
+		<Unit filename="src/CButtonImage.cpp" />
+		<Unit filename="src/CCamera.cpp" />
+		<Unit filename="src/CCharStat.cpp" />
+		<Unit filename="src/CCharacter.cpp" />
+		<Unit filename="src/CCombatText.cpp" />
+		<Unit filename="src/CCombatTextSystem.cpp" />
+		<Unit filename="src/CDataTables.cpp" />
+		<Unit filename="src/CDimensional.cpp" />
+		<Unit filename="src/CDisplayPlayerStat.cpp" />
+		<Unit filename="src/CDisplayStats.cpp" />
+		<Unit filename="src/CEffect.cpp" />
+		<Unit filename="src/CEffectManager.cpp" />
+		<Unit filename="src/CEntity.cpp" />
+		<Unit filename="src/CEntitySystem.cpp" />
+		<Unit filename="src/CGame.cpp" />
+		<Unit filename="src/CGuiButton.cpp" />
+		<Unit filename="src/CGuiElement.cpp" />
+		<Unit filename="src/CInputSystem.cpp" />
+		<Unit filename="src/CInterfaceSystem.cpp" />
+		<Unit filename="src/CInventory.cpp" />
+		<Unit filename="src/CItemdrag.cpp" />
+		<Unit filename="src/CLootSystem.cpp" />
+		<Unit filename="src/CMap.cpp" />
+		<Unit filename="src/CMapGenerator.cpp" />
+		<Unit filename="src/CMessage.cpp" />
+		<Unit filename="src/CMessageListener.cpp" />
+		<Unit filename="src/CMessageSystem.cpp" />
+		<Unit filename="src/CParticle.cpp" />
+		<Unit filename="src/CParticleEffect.cpp" />
+		<Unit filename="src/CParticleEmitter.cpp" />
+		<Unit filename="src/CParticleSystem.cpp" />
+		<Unit filename="src/CPlayer.cpp" />
+		<Unit filename="src/CProgressiveStat.cpp" />
+		<Unit filename="src/CProjectile.cpp" />
+		<Unit filename="src/CRNG.cpp" />
+		<Unit filename="src/CSceneManager.cpp" />
+		<Unit filename="src/CScriptSystem.cpp" />
+		<Unit filename="src/CSpatialSystem.cpp" />
+		<Unit filename="src/CSpriteWrapper.cpp" />
+		<Unit filename="src/CTesting.cpp" />
+		<Unit filename="src/CTextWidget.cpp" />
+		<Unit filename="src/CTextWrapper.cpp" />
+		<Unit filename="src/CTile.cpp" />
+		<Unit filename="src/CTileLayer.cpp" />
+		<Unit filename="src/CTimer.cpp" />
+		<Unit filename="src/CTooltip.cpp" />
+		<Unit filename="src/CTooltipManager.cpp" />
+		<Unit filename="src/CTrackHealth.cpp" />
+		<Unit filename="src/CTrackResource.cpp" />
+		<Unit filename="src/CUpgradeManager.cpp" />
+		<Unit filename="src/CWidget.cpp" />
+		<Unit filename="src/CWidgetEffect.cpp" />
+		<Unit filename="src/CWindow.cpp" />
+		<Unit filename="src/CWindowCastbar.cpp" />
+		<Unit filename="src/CWindowInventory.cpp" />
+		<Unit filename="src/CWorldManager.cpp" />
+		<Unit filename="src/CZBuffer.cpp" />
+		<Unit filename="src/LuaWrapper.cpp" />
+		<Unit filename="src/Utility.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

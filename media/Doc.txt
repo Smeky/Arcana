@@ -1,0 +1,43 @@
+
+
+	Just simple documentation for classes and theirs functions
+	
+	Format:
+	
+		Class name
+			Function name	: 	Lua userdata function name
+	
+	
+	
+	
+CGuiElement
+	addTexture : addTexture( table / textureID )
+		- brief:	Creates new sprite wrapper based on either table or textureID and adds it to the end of vector
+		- param: 	element		- light user data
+		- param:	table 		- either table or textureID
+		- return:	ID of the new sprite, return 0 if there was error
+		
+		
+	luaGetLightUserData : getPointer
+		- brief:	Pushes light user data to stack
+		
+
+CGuiButton
+	luaAddButtonTexture : addButtonTexture
+		- brief:	Same functionality as CGuiElement::addTexure. Also stores sprites ID to be used as button texture
+		- param:	button		- light user data
+		- param:	table		- either table or textureID
+		- return:	ID of the new sprite, return 0 if there was error
+		
+	luaSetButtonTexture : setButtonTexture
+		- brief:	Same functionality as CGuiElement::setTexture. Also stores sprites ID to be used as button texture
+		- param:	button		- light user data
+		- param:	ID			- ID of the sprite
+		- return:	Bool value of success
+
+	luaAddFunction : addButtonFunction
+		- brief:	Registers lua function in interface system based on given arguments
+		- param:	button		- light user data
+		- param:	name		- function name
+		- param:	function	- lua function
+		- return:	Bool value of success
