@@ -30,6 +30,16 @@
 		4 	- Percent Add
 		5	- Percent Remove
 		
+	Effect stats:
+		- 	ID
+		- 	type
+		- 	subtype
+		- 	texture
+		- 	duration
+		-	ticktime
+		
+		
+		
 	Effect type;
 		0 	- Buff
 		1 	- Debuff
@@ -38,6 +48,13 @@
 		0 	- Default
 		1	- Stat
 		2 	- Event
+		
+	Effect event type:
+	   -1	- None
+		0	- onDmg
+		1 	- onHeal
+		2 	- onDmgCrit
+		
 ]]
 
 local effects = {}
@@ -54,10 +71,23 @@ end
 
 register( "AddEffectToPlayer",	addEffectToPlayer )
 
+effects[ "EFFECT_FROSTSHILED" ] = {
+	ID 			= "EFFECT_FROSTSHILED";
+	type		= 0;
+	subtype		= 2;
+	duration	= 10;
+	
+	event		= 0;
+	
+	functions 	= {
+		onAction		= function( parent, source, damage ) end;
+	};
+}
+
 effects[ "EFFECT_SLOW_FROSTSHIELD" ] = {
 	ID 			= "EFFECT_SLOW_FROSTSHIELD";
 	type		= 1;
-	sub_type	= 1;
+	subtype		= 1;
 	
 	stat		= {
 		index		= 9;

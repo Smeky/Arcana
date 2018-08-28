@@ -1,6 +1,8 @@
 #ifndef CMAP_H
 #define CMAP_H
 
+#define TILESIZE 64
+
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>

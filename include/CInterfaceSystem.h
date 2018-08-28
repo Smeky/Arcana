@@ -90,6 +90,9 @@ public:
     /** Element - new interface design - work in progress */
     static  int     luaNewElement           ( lua_State* state );
     static  int     luaNewButton            ( lua_State* state );
+    static  int     luaNewCheckbox          ( lua_State* state );
+    static  int     luaNewSlider            ( lua_State* state );
+    static  int     luaNewDropbox           ( lua_State* state );
 
     static  int     luaDeleteSprite         ( lua_State* state );
     static  int     luaDeleteText           ( lua_State* state );

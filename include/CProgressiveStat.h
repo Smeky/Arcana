@@ -18,6 +18,7 @@ public:
     bool            canRemove       ( int amount ) const;
 
     void            setMaximum      ( int maximum );
+    void            setMaximumFactor( int maximum );
     void            setCurrent      ( int current );
 
     int             getMaximum      () const;

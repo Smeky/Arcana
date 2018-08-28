@@ -21,6 +21,7 @@
 		4	- Three quarters of life
 ]]
 
+local myEntity = EntitySystem
 
 -- Forward declaration
 local emitters = {}
@@ -30,6 +31,13 @@ function getEmitter( ID )
 	
 	return emitters[ ID ]
 end
+
+-- Empty for now, needs a good way of adding and removing effects from entities ( not just time based )
+function addEffectToEntity( entity )
+	
+end
+
+register( "AddParticlesToEntity",	addEffectToEntity )
 
 emitters[ "EMITTER_TEST" ] = {
 	emission	= 0.1;

@@ -10,6 +10,12 @@
 #include "iostream"
 using namespace std;
 
+int Util::compareTo( int first, int second ) {
+    if( first < second ) return - 1;
+    if( first > second ) return 1;
+    return 0;
+}
+
 // Convert degrees to radians
 float Util::degreeToRad( const float degree ) {
     return degree * ( PI / 180 );
@@ -181,11 +187,11 @@ std::string Util::uintToString( size_t num ) {
 }
 
 std::string Util::floatToString( float num ) {
-    char buffer[ 2 ];
+    std::ostringstream oss;
 
-    snprintf( buffer, 2, "%f", num );
+    oss << num;
 
-    return std::string( buffer );
+    return oss.str();
 }
 
 std::string Util::decimalToString( float num, size_t decimals ) {
@@ -194,6 +200,44 @@ std::string Util::decimalToString( float num, size_t decimals ) {
     snprintf( buffer, decimals + 3, "%f", num );
 
     return std::string( buffer );
+}
+
+std::string Util::boolToString( bool value ) {
+    if( value ) {
+        return "true";
+    }
+    else {
+        return "false";
+    }
+}
+
+bool Util::stringToBool( const std::string& text ) {
+    if( text == "true" ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+float Util::stringToFloat( const std::string& text ) {
+    std::stringstream ss;
+    ss << text;
+
+    float value = 0.0;
+    ss >> value;
+
+    return value;
+}
+
+void Util::valueFromString( const std::string& line, const std::string& name, bool& value ) {
+    size_t pos = line.find( name );
+
+    if( pos < line.size() ) {
+        pos = line.find( ' ', pos );
+
+        value = Util::stringToBool( line.substr( pos + 1 ) );
+    }
 }
 
 sf::Vector2f Util::vector2fFromLuaTable( lua_State* state, int index ) {

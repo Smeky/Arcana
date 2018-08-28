@@ -1,6 +1,7 @@
 #include "CEntitySystem.h"
 
 #include "cassert"
+#include <sstream>
 #include "lua.hpp"
 
 #include "CGame.h"
@@ -36,7 +37,7 @@ CEntitySystem::~CEntitySystem() {
 
 void CEntitySystem::close() {
     while( !m_enemies.empty() ) delete m_enemies.back(), m_enemies.pop_back();
-    while( !m_objects.empty() ) delete m_objects.back(), m_objects.pop_back();
+    while( !m_objects.empty() ) delete m_objects.back(), m_objects.back() = nullptr, m_objects.pop_back();
     while( !m_projectiles.empty() ) delete m_projectiles.back(), m_projectiles.pop_back();
 
 
@@ -155,6 +156,52 @@ C_Dimensionals CEntitySystem::getNearbySolid( const CDimensional* dim ) {
     return nearby;
 }
 
+bool CEntitySystem::checkSphereForColl( const sf::Vector2f& pos, float radius ) {
+    CDimensional dim;
+
+    dim.setPos( pos.x - radius, pos.y - radius );
+    dim.setSize( radius * 2, radius * 2 );
+
+    CSpatialSystem::Cell    entities    = CGame::SpatialSystem.getNearby( &dim );
+
+    for( auto it : entities ) {
+        if( it->getBox().intersects( dim.getBox() ) ) {
+            return true;
+        }
+    }
+
+    C_Dimensionals tiles       = CGame::WorldManager.getCurrentlyUsedMap()->getNearby( &dim );
+
+    for( auto it : tiles ) {
+        if( it->getBox().intersects( dim.getBox() ) ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool CEntitySystem::isPosFree( const sf::Vector2f& pos, const sf::Vector2f& size ) {
+    CDimensional dim;
+
+    dim.setPos( pos );
+    dim.setSize( size );
+
+    for( auto it : CGame::SpatialSystem.getNearby( &dim ) ) {
+        if( it->getBox().intersects( dim.getBox() ) ) {
+            return false;
+        }
+    }
+
+    for( auto it : CGame::WorldManager.getCurrentlyUsedMap()->getNearby( &dim ) ) {
+        if( it->getBox().intersects( dim.getBox() ) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void CEntitySystem::attackTarget( size_t sourceID, size_t targetID, int damage, DamageType type ) {
     if( m_player->getID() == targetID ) {
         m_player->takeDamage( sourceID, damage, type );
@@ -224,6 +271,16 @@ void CEntitySystem::attackTarget( CCharacter* target, CCharacter* source, int da
     }
 }
 
+void CEntitySystem::attackTarget( size_t sourceID, size_t targetID, const ProjectileStats& stats ) {
+    DamageType type;
+
+    int damage = calculateDamage( stats.dmgMin, stats.dmgMax, stats.critChance, stats.critMultip, type );
+
+    if( damage != 0 ) {
+        handleAttack( targetID, sourceID, damage, type );
+    }
+}
+
 void CEntitySystem::playerInteract() {
     // Maximum distance for interaction
     float maximum   = 150;
@@ -254,6 +311,25 @@ void CEntitySystem::interactWithObject( size_t ID ) {
             return;
         }
     }
+}
+
+int CEntitySystem::calculateDamage( int min, int max, float critChance, float critMultip, DamageType& type ) {
+    if( min == 0 || max == 0 ) return 0;
+
+    int damage = CRNG::iRandom( min, max );
+
+    if( critChance != 0.0 && critMultip != 0.0 ) {
+        if( CRNG::percentRandom() * 100 < critChance ) {
+            damage += 1 + (int)( damage * critMultip + 0.5 );
+
+            type = DamageType::DMG_CRIT;
+        }
+        else {
+            type = DamageType::DMG_NORMAL;
+        }
+    }
+
+    return damage;
 }
 
 bool CEntitySystem::isCharacter( size_t ID ) {
@@ -465,6 +541,37 @@ sf::Vector2f CEntitySystem::getEntitySize( size_t ID ) {
 
     // Return empty vector ( no entity was found )
     return sf::Vector2f();
+}
+
+void CEntitySystem::setEntityPosRandom( CEntity* entity ) {
+    if( entity != nullptr ) {
+        sf::Vector2f mapSize    = CGame::WorldManager.getCurrentlyUsedMap()->getSize();
+
+        sf::Vector2f size = entity->getSize();
+        sf::Vector2f pos;
+
+        for( size_t i = 0; i < 100; i++ ) {
+            pos.x   = CRNG::iRandom( 0, mapSize.x );
+            pos.y   = CRNG::iRandom( 0, mapSize.y );
+
+            if( checkIfPosIsFree( sf::FloatRect( pos.x, pos.y, size.x, size.y ) ) ) {
+                entity->setPos( pos );
+
+                return;
+            }
+        }
+
+        #ifdef DEBUG
+            std::cout << "[D]Warning: Set random entity position failed." << std::endl;
+        #endif // DEBUG
+    }
+    else {
+        std::cout << "Warning: Unable to set random entity position. Got nullptr" << std::endl;
+    }
+}
+
+CEntity* CEntitySystem::getEntityByID( size_t ID ) {
+    return getEntity( ID );
 }
 
 size_t CEntitySystem::playerFromLuaTable( lua_State* state, int index ) {
@@ -881,6 +988,28 @@ int CEntitySystem::luaSetPosSize( lua_State* state ) {
     return 0;
 }
 
+int CEntitySystem::luaSetPosRandom( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    if( argc == 2 ) {
+        if( lua_islightuserdata( state, argc ) ) {
+            CEntity* entity = (CEntity*)lua_touserdata( state, argc );
+
+            CGame::EntitySystem.setEntityPosRandom( entity );
+        }
+        else {
+            std::cout << "Error: Unable to set random position. Light user data expected" << std::endl;
+        }
+    }
+    else {
+        std::cout << "Error: Unable to set random position. Wrong amount of arguments" << std::endl;
+    }
+
+    lua_pop( state, argc );
+
+    return 0;
+}
+
 int CEntitySystem::luaGetPos( lua_State* state ) {
     int argc = lua_gettop( state );
 
@@ -1089,6 +1218,37 @@ int CEntitySystem::luaGetResource( lua_State* state ) {
 
     lua_pushinteger( state, maxResource );
     lua_pushinteger( state, curResource );
+
+    return 2;
+}
+
+int CEntitySystem::luaGetExperience( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    int maxExperience   = 0;
+    int curExperience   = 0;
+
+    if( argc == 2 ) {
+        if( lua_islightuserdata( state, argc ) ) {
+            CCharacter* character = (CCharacter*)lua_touserdata( state, argc );
+
+            if( character != nullptr ) {
+                maxExperience = character->getExpToLevel();
+                curExperience = character->getExp();
+            }
+        }
+        else {
+            std::cout << "Error: Unable to get experience. Expected Light user data" << std::cout;
+        }
+    }
+    else {
+        std::cout << "Error: Unable to get experience. Wrong amount of arguments" << std::cout;
+    }
+
+    lua_pop( state, argc );
+
+    lua_pushinteger( state, maxExperience );
+    lua_pushinteger( state, curExperience );
 
     return 2;
 }
@@ -1306,11 +1466,15 @@ int CEntitySystem::luaDealDamage( lua_State* state ) {
 int CEntitySystem::luaAddEffect( lua_State* state ) {
     int argc = lua_gettop( state );
 
-    CCharacter* character  = nullptr;
-
     if( argc == 3 ) {
         if( lua_islightuserdata( state, argc - 1 ) ) {
-            character   = (CCharacter*)lua_touserdata( state, argc - 1 );
+            CCharacter* character = (CCharacter*)lua_touserdata( state, argc - 1 );
+
+            if( character != nullptr ) {
+                if( character->getType() == TYPE_CHARACTER ) {
+                    CGame::EffectManager.createFromLuaTable( state, argc, character );
+                }
+            }
         }
         else {
             std::cout << "Error: Unable to add effect. Light user data expected" << std::endl;
@@ -1320,11 +1484,6 @@ int CEntitySystem::luaAddEffect( lua_State* state ) {
         std::cout << "Error: Unable to add effect. " << errorArgc << std::endl;
     }
 
-    if( character != nullptr ) {
-        if( character->getType() == TYPE_CHARACTER ) {
-            CGame::EffectManager.createFromLuaTable( state, argc, character );
-        }
-    }
 
     lua_pop( state, argc );
 
@@ -1636,6 +1795,28 @@ int CEntitySystem::luaDelColor( lua_State* state ) {
 
     return 0;
 }
+
+//int CEntitySystem::luaAddParticles( lua_State* state ) {
+//    int argc = lua_gettop( state );
+//
+//    if( argc == 3 ) {
+//        if( lua_islightuserdata( state, argc - 1 ) ) {
+//            CEntity* entity = (CEntity*)lua_touserdata( state, argc - 1 );
+//
+//            CGame::WorldManager.ParticleSystem.effectFromLuaTable( state, argc, entity );
+//        }
+//        else {
+//            std::cout << "Error: Unable to del color. Light user data expected" << std::endl;
+//        }
+//    }
+//    else {
+//        std::cout << "Error: Unable to add particles. " << errorArgc << std::endl;
+//    }
+//
+//    lua_pop( state, argc );
+//
+//    return 0;
+//}
 
 int CEntitySystem::luaIsPosFree( lua_State* state ) {
     int argc = lua_gettop( state );
@@ -2246,6 +2427,40 @@ void CEntitySystem::loadBaseEntityData( lua_State* state, int index, CEntity* en
         entity->setParticleEffectID( effectID );
     }
 
+    lua_getfield( state, index, "soundEmitter" );
+    if( lua_isstring( state, - 1 ) ) {
+        CGame::AudioSystem.registerEmitter( entity, lua_tostring( state, - 1 ) );
+
+        entity->setSoundEmitter( true );
+    }
+
+    lua_getfield( state, index, "sounds" );
+    if( lua_istable( state, - 1 ) ) {
+        for( lua_pushnil( state ); lua_next( state, - 2 ) != 0; lua_pop( state, 1 ) ) {
+            // Copy the key
+            lua_pushvalue( state, - 2 );
+
+            std::string key     = lua_tostring( state, - 1 );
+            std::string ID      = lua_tostring( state, - 2 );
+
+            // Pop the copy of the key
+            lua_pop( state, 1 );
+
+            if( key == "onDespawn" ) {
+                entity->setSound( EntitySounds::ONDESPAWN, ID );
+            }
+            else if( key == "onInteract" ) {
+                entity->setSound( EntitySounds::ONDESPAWN, ID );
+            }
+            else if( key == "onDeath" ) {
+                entity->setSound( EntitySounds::ONDESPAWN, ID );
+            }
+            else {
+                std::cout << "Warning: Not supported key for entity sound: " << key << std::endl;
+            }
+        }
+    }
+
     lua_getfield( state, index, "ai" );
     if( lua_istable( state, - 1 ) ) {
         entity->setAiComponent( loadAiFromLauTable( state, lua_gettop( state ) ) );
@@ -2308,7 +2523,7 @@ void CEntitySystem::loadBaseEntityData( lua_State* state, int index, CEntity* en
         }
     }
 
-    lua_pop( state, 7 );
+    lua_pop( state, 9 );
 }
 
 void CEntitySystem::loadCharacterData( lua_State* state, int index, CCharacter* character ) {
@@ -2525,6 +2740,52 @@ void CEntitySystem::loadProjectileData( lua_State* state, int index, CProjectile
     lua_pop( state, 4 );
 }
 
+/** LUA END */
+
+void CEntitySystem::handleAttack( size_t targetID, size_t sourceID, int damage, DamageType type ) {
+    if( m_player->getID() == targetID ) {
+        int recalculatedDamage = m_player->calculateReductions( damage );
+
+        m_player->takeDamage( sourceID, recalculatedDamage, type );
+        m_player->onDamageTaken( sourceID, recalculatedDamage );
+
+        CGame::WorldManager.CombatTextSystem.createCombatText( m_player, recalculatedDamage, type );
+
+        if( m_player->isDead() ) {
+            m_player->onDeath();
+        }
+
+        return;
+    }
+
+
+//    CGame::WorldManager.CombatTextSystem.createCombatText( sf::Vector2f( getCenter().x, m_pos.y ), recalculatedDamage, CombatTextType::COMBATTEXT_DMGNORMAL );
+
+    for( auto it : m_enemies ) {
+        if( it->getID() == targetID ) {
+            if( !it->isDead() ) {
+                int recalculatedDamage = it->calculateReductions( damage );
+
+                it->takeDamage( sourceID, recalculatedDamage, type );
+                it->onDamageTaken( sourceID, recalculatedDamage );
+
+                CGame::WorldManager.CombatTextSystem.createCombatText( it, recalculatedDamage, type );
+
+                if( it->isDead() ) {
+                    m_player->addExp( it->getExpOnKill() );
+                    it->onDeath();
+
+                    if( it->hasLootTable() ) {
+                        CGame::WorldManager.LootSystem.createLoot( it );
+                    }
+                }
+            }
+
+            return;
+        }
+    }
+}
+
 void CEntitySystem::displayEntityBox( sf::RenderTarget& window, sf::RenderStates states ) {
     sf::RectangleShape red;
     sf::RectangleShape blue;
@@ -2630,9 +2891,25 @@ void CEntitySystem::displayEntityStat( sf::RenderTarget& window, sf::RenderState
     box.setPosition( entityPos.x - 2, entityPos.y - 2 );
     box.setSize( sf::Vector2f( entitySize.x + 4, entitySize.y + 4 ) );
 
+    /** Memory Adress */
+    sf::Text textAddess;
+    textAddess.setPosition( 20, 120 );
+    textAddess.setFont( CGame::AssetManager.getFont( "FONT_ARIAL" ) );
+    textAddess.setCharacterSize( 12 );
+    textAddess.setColor( sf::Color::White );
+
+    std::ostringstream oss;
+    oss << m_debugEntityStat;
+
+    std::string addressString;
+    addressString.append( "mem. address: " );
+    addressString.append( oss.str() );
+
+    textAddess.setString( addressString );
+
     /** Position */
     sf::Text textPos;
-    textPos.setPosition( 20, 120 );
+    textPos.setPosition( 20, 135 );
     textPos.setFont( CGame::AssetManager.getFont( "FONT_ARIAL" ) );
     textPos.setCharacterSize( 12 );
     textPos.setColor( sf::Color::White );
@@ -2647,7 +2924,7 @@ void CEntitySystem::displayEntityStat( sf::RenderTarget& window, sf::RenderState
 
     /** Size */
     sf::Text textSize;
-    textSize.setPosition( 20, 135 );
+    textSize.setPosition( 20, 150 );
     textSize.setFont( CGame::AssetManager.getFont( "FONT_ARIAL" ) );
     textSize.setCharacterSize( 12 );
     textSize.setColor( sf::Color::White );
@@ -2663,7 +2940,7 @@ void CEntitySystem::displayEntityStat( sf::RenderTarget& window, sf::RenderState
 
     /** Z layer */
     sf::Text textZ;
-    textZ.setPosition( 20, 150 );
+    textZ.setPosition( 20, 165 );
     textZ.setFont( CGame::AssetManager.getFont( "FONT_ARIAL" ) );
     textZ.setCharacterSize( 12 );
     textZ.setColor( sf::Color::White );
@@ -2675,6 +2952,7 @@ void CEntitySystem::displayEntityStat( sf::RenderTarget& window, sf::RenderState
 
     textZ.setString( zString );
 
+    window.draw( textAddess );
     window.draw( textPos );
     window.draw( textSize );
     window.draw( textZ );

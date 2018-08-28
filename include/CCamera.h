@@ -18,6 +18,9 @@ public:
     sf::Vector2f    getRelCenter    () const;
 
 private:
+    void            onPosChange     ();
+
+private:
     sf::Vector2f    m_destination;
     float           m_moveFactor;
 };

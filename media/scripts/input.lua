@@ -5,9 +5,18 @@
 		0			- 26
 		...
 		9			- 35
+		
+		Arrow UP	- 73
+		Arrow DOWN	- 74
+		
+		U       	- 20
+		I       	- 8
 ]]
 
-local myCore = Core
+local myCore 	= Core
+local myAudio	= Audio
+local myGui		= Gui
+local myEntity	= EntitySystem
 
 
 function onKeyPress( keyID ) 
@@ -16,7 +25,6 @@ end
 
 function pauseGame()
 	myGui:destroyTooltip()
-	
 	
 	if myGui:isWindowShown( Window_ItemDestroy_ID ) then
 		inventoryKeepItem()
@@ -31,18 +39,16 @@ function pauseGame()
 		myGui:reverseWindowActive( Window_Abilitybar_ID )
 		myWorld:pauseGame()
 	end
+	
+	if myWorld:isGamePaused() then
+		myGui:setActive( Window_Abilitybar, false )
+	else 
+		myGui:setActive( Window_Abilitybar, true )
+	end
 end
 
 function onKeyRelease( keyID )
 	local sceneID = myCore:getSceneID()
-	
-	local tooltip = {
-		pos			= { 700, 400 };
-		textureBg	= "GUI_TOOLTIP_BG";
-		texts		= {
-			text = { pos = { 10, 60 }, font = "FONT_ARIAL", size = 15, style = 0, color = { 255, 255, 255, 255 }, origin = 1, string = "Str: " };
-		};
-	}
 	
 	if sceneID == 1 then
 			if keyID == 27 then charSelectionIndex = 1; changeSceneToPlay( 2 ) -- Num1
@@ -54,16 +60,14 @@ function onKeyRelease( keyID )
 		end
 		
 	elseif sceneID == 2 then
-		
-			if keyID == 1 	then myGui:reverseWindowShown( Window_Inventory_ID )
-		elseif keyID == 4 	then myCore:sendMessage( "LevelStart" )
-		elseif keyID == 27 	then myWorld:playerCastAbility( 0, { getRelativeMousePos() } )
-		elseif keyID == 28 	then myWorld:playerCastAbility( 1, { getRelativeMousePos() } )
-		elseif keyID == 29 	then myWorld:playerCastAbility( 2, { getRelativeMousePos() } )
-		elseif keyID == 30 	then myWorld:playerCastAbility( 3, { getRelativeMousePos() } )
-		elseif keyID == 92	then showOrHideMapWindow() 	-- F8
-		end
-	
+		if myWorld:isGamePaused() == false then
+				if keyID == 1 	then myGui:reverseWindowShown( Window_Inventory_ID )
+			elseif keyID == 27 	then myWorld:playerCastAbility( 0, { getRelativeMousePos() } )
+			elseif keyID == 28 	then myWorld:playerCastAbility( 1, { getRelativeMousePos() } )
+			elseif keyID == 29 	then myWorld:playerCastAbility( 2, { getRelativeMousePos() } )
+			elseif keyID == 30 	then myWorld:playerCastAbility( 3, { getRelativeMousePos() } )
+			end
+		end	
 	end
 	
 	if keyID == 5 then			-- F
@@ -71,11 +75,8 @@ function onKeyRelease( keyID )
 			myWorld:playerInteract()
 		end
 	
-	elseif keyID == 36 then			-- Escape
-		if sceneID == 0 then
-			myCore:closeGame()
-			
-		elseif sceneID == 1 then
+	elseif keyID == 36 then			-- Escape	
+		if sceneID == 1 then
 			myCore:changeScene( 0 )
 			
 		elseif sceneID == 2 then
@@ -83,9 +84,21 @@ function onKeyRelease( keyID )
 			
 		end
 		
+	elseif keyID == 20 then
+		myCore:setupWindow( 1000, 600, 4 )
+		GameWindow_W, GameWindow_H = myCore:getWindowSize()
+		myGui:close()
+		myCore:changeScene( myCore:getSceneID() )
+	
+	elseif keyID == 8 then
+		myCore:setupWindow( 1280, 754, 8 )
+		GameWindow_W, GameWindow_H = myCore:getWindowSize()
+		myGui:close()
+		myCore:changeScene( myCore:getSceneID() )
 		
-	elseif keyID == 85 then		-- F1		- Test
 		
+	elseif keyID == 85 then		-- F1		- Display map tile grid
+		myWorld:displayMapGrid()
 		
 	elseif keyID == 87 then		-- F3		- Testing deleting sprite by ID
 		myGui:deleteSprite( spriteID )
@@ -102,7 +115,7 @@ function onKeyRelease( keyID )
 	elseif keyID == 91 then 	-- F7		- Display spatial system
 		myWorld:displaySS()
 	
-	elseif keyID == 92 then 	-- F8		- Display spatial stat
+	elseif keyID == 92 then 	-- F8		- Display entity stats
 		myWorld:displayEntityStat()
 		
 	end

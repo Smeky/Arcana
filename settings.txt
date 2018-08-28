@@ -1,0 +1,12 @@
+audio_enable_master: false
+audio_enable_music: false
+audio_enable_effect: true
+audio_enable_voice: false
+audio_enable_ambient: true
+audio_enable_interface: false
+audio_volume_master: 1
+audio_volume_music: 0.346667
+audio_volume_effect: 0.06
+audio_volume_voice: 0.74
+audio_volume_ambient: 0.9
+audio_volume_interface: 0.76

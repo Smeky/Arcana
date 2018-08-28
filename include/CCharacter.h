@@ -42,7 +42,7 @@ enum class StatIndex : int {
 
 enum class EffectEventType : int {
     EEVENT_NONE         = - 1,
-    EEVENT_ONDMG,
+    EEVENT_ONDMG        = 0,
     EEVENT_ONHEAL,
     EEVENT_ONDMGCRIT,
     EEVENT_COUNT        // KEEP LAST
@@ -74,7 +74,8 @@ public:
 
             /** Combat */
             void        performAttack       ( float angle );
-            void        takeDamage          ( size_t sourceID, int damage, DamageType type );
+            void        takeDamage          ( size_t sourceID, int damage, DamageType type );   // Temp, remove it
+            int         calculateReductions ( int damage );
 
             /** Character based data */
             void        setBaseStats        ( const CharacterStats& stats );

@@ -3,6 +3,9 @@
 #include <CGame.h>
 #include <CCharacter.h>
 
+#include <iostream>
+using namespace std;
+
 CEffect::CEffect()
 : m_active      ( true )
 , m_infinite    ( false )
@@ -61,19 +64,19 @@ void CEffect::onAplication() {
         m_parent->getAnimation().getSprite().addColorModul( m_data.color );
     }
 
-    size_t functionID = m_funcIDs[ EffectFunctionType::EFUNC_APLICATION ];
+    CScriptSystem::ArgType type[ 1 ];
 
-    if( functionID != 0 ) {
-        CGame::EffectManager.callLuaFunction( functionID, m_parent );
-    }
+    type[ 0 ]   = CScriptSystem::ARG_LUD;
+
+    CGame::ScriptSystem.callFunc( m_funcIDs[ EFUNC_APLICATION ], type, 1, m_parent );
 }
 
 void CEffect::onAction() {
-    size_t functionID = m_funcIDs[ EffectFunctionType::EFUNC_ACTION ];
+    CScriptSystem::ArgType type[ 1 ];
 
-    if( functionID != 0 ) {
-        CGame::EffectManager.callLuaFunction( functionID, m_parent );
-    }
+    type[ 0 ]   = CScriptSystem::ARG_LUD;
+
+    CGame::ScriptSystem.callFunc( m_funcIDs[ EFUNC_ACTION ], type, 1, m_parent );
 }
 
 void CEffect::onRemove() {
@@ -81,11 +84,11 @@ void CEffect::onRemove() {
         m_parent->getAnimation().getSprite().delColorModul( m_data.color );
     }
 
-    size_t functionID = m_funcIDs[ EffectFunctionType::EFUNC_REMOVE ];
+    CScriptSystem::ArgType type[ 1 ];
 
-    if( functionID != 0 ) {
-        CGame::EffectManager.callLuaFunction( functionID, m_parent );
-    }
+    type[ 0 ]   = CScriptSystem::ARG_LUD;
+
+    CGame::ScriptSystem.callFunc( m_funcIDs[ EFUNC_REMOVE ], type, 1, m_parent );
 }
 
 CTimer CEffect::getLiveTimer() const {
@@ -124,19 +127,12 @@ void CEffectStat::removeStatAdjustment() {
 
 /** CEffectEvent */
 
-void CEffectEvent::onEventAction( int argc, ... ) {
-    std::vector<float>  vecArguments;
+void CEffectEvent::onEventAction( void* source, int damage ) {
+    CScriptSystem::ArgType type[ 3 ];
 
-    va_list arguments;
-    va_start( arguments, argc );
+    type[ 0 ]   = CScriptSystem::ARG_LUD;
+    type[ 1 ]   = CScriptSystem::ARG_LUD;
+    type[ 2 ]   = CScriptSystem::ARG_INT;
 
-    for( int i = 0; i < argc; i++ ) {
-        int num = va_arg( arguments, int );
-
-        vecArguments.push_back( num );
-    }
-
-    va_end( arguments );
-
-    CGame::EffectManager.callLuaFunction( m_funcIDs[ EFUNC_ACTION ], m_parent, vecArguments );
+    CGame::ScriptSystem.callFunc( m_funcIDs[ EFUNC_ACTION ], type, 3, m_parent, source, damage );
 }

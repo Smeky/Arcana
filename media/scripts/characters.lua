@@ -42,10 +42,13 @@ characters[ "PLAYER_BARBARIAN" ] = {
 		stats		= {
 			str			= 10;
 			regHealth	= 0;
+			regResource	= 1;
 			moveSpd		= 100;
 			attSpd		= 250;
 			dmgMin		= 3;
 			dmgMax		= 6;
+			critChance	= 30;
+			critMultip	= 50;
 		};
 	};
 }
@@ -71,6 +74,7 @@ characters[ "PLAYER_KNIGHT" ] = {
 			str			= 5;
 			vit			= 6;
 			regHealth	= 1;
+			regResource	= 1;
 			moveSpd		= 80;
 			attSpd		= 180;
 			dmgMin		= 2;
@@ -81,11 +85,11 @@ characters[ "PLAYER_KNIGHT" ] = {
 
 characters[ "PLAYER_RANGER" ] = {
 	data		= {
-		size 		= { 34, 42 };
+		size 		= { 56, 80 };
 		collbox		= { 0, 42 - ( 42 / 2.5 ), 34, 42 / 2.5 };
 		texture 	= {
 			texture 	= "CHAR_PLAYER_RANGER";
-			clip		= { 0; 0; 17; 21; };
+			clip		= { 0; 0; 56; 80; };
 			frameDelay	= 0.25;
 			directions	= true
 		}		
@@ -98,6 +102,7 @@ characters[ "PLAYER_RANGER" ] = {
 		resource	= 60;
 		stats		= {
 			dex			= 10;
+			regResource	= 1;
 			moveSpd		= 110;
 			attSpd		= 300;
 			dmgMin		= 3;
@@ -127,6 +132,7 @@ characters[ "PLAYER_ASSASSIN" ] = {
 		resource	= 50;
 		stats		= {
 			dex			= 10;
+			regResource	= 1;
 			moveSpd		= 120;
 			attSpd		= 300;
 			dmgMin		= 4;
@@ -210,11 +216,12 @@ characters[ "ENEMY_RANGER" ] = {
 		faction		= 2;
 		health		= 30;
 		resource	= 40;
-		experience	= 10;
+		experience	= 2;
 		stats		= {
 			str			= 10;
 			vit			= 5;
 			regHealth	= 1;
+			regResource	= 1;
 			moveSpd		= 100;
 			attSpd		= 200;
 			dmgMin		= 3;
@@ -241,15 +248,99 @@ characters[ "ENEMY_SORCERER" ] = {
 		faction		= 2;
 		health		= 30;
 		resource	= 40;
-		experience	= 10;
+		experience	= 2;
 		stats		= {
 			str			= 10;
 			vit			= 5;
 			regHealth	= 1;
+			regResource	= 1;
 			moveSpd		= 100;
 			attSpd		= 200;
 			dmgMin		= 3;
 			dmgMax		= 6;
+		};
+	};										
+}
+
+characters[ "ENEMY_BOSS" ] = {
+	data 		= {
+		size 		= { 112, 160 };
+		collbox		= { 0, 160 - 160 / 2.5, 112, 160 / 2.5 };
+		texture 	= {
+			texture 	= "CHAR_ENEMY_BOSS";
+			clip		= { 0; 0; 17; 21; };
+			frameDelay	= 0.25;
+			directions	= true;
+		};
+	};
+	
+	functions	= {
+		onDespawn	= 
+			function( ID )
+				myCore:sendMessage( "BossDefeated" )
+			end
+	};
+		
+	charData 	= {
+		class		= 3;
+		faction		= 2;
+		health		= 160;
+		resource	= 40;
+		experience	= 40;
+		stats		= {
+			str			= 5;
+			dex			= 10;
+			int			= 5;
+			vit			= 10;
+			regHealth	= 2;
+			moveSpd		= 120;
+			attSpd		= 300;
+			dmgMin		= 3;
+			dmgMax		= 10;
+			critChance	= 20;
+			critMultip	= 50;
+		};
+	};										
+}
+
+
+characters[ "ENEMY_BOSS_2" ] = {
+	data 		= {
+		size 		= { 140, 200 };
+		collbox		= { 0, 200 - 200 / 2.5, 140, 200 / 2.5 };
+		texture 	= {
+			texture 	= "CHAR_ENEMY_BOSS";
+			clip		= { 0; 0; 17; 21; };
+			frameDelay	= 0.25;
+			directions	= true;
+		};
+	};
+	
+	functions	= {
+		onDespawn	= 
+			function( ID )
+				myCore:sendMessage( "BossDefeated" )
+			end
+	};
+		
+	charData 	= {
+		class		= 3;
+		faction		= 2;
+		health		= 400;
+		resource	= 40;
+		experience	= 40;
+		stats		= {
+			str			= 5;
+			dex			= 15;
+			int			= 5;
+			vit			= 15;
+			regHealth	= 3;
+			moveSpd		= 120;
+			attSpd		= 400;
+			dmgMin		= 5;
+			dmgMax		= 11;
+			critChance	= 30;
+			critMultip	= 50;
 		};
 	};										
 }

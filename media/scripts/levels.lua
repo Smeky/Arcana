@@ -2,6 +2,7 @@
 
 local myWorld		= World
 local myGui 		= Gui
+local myEntity		= EntitySystem
 
 local level = {}
 
@@ -22,13 +23,27 @@ function createLevel( ID )
 		end
 	else
 			if ID == 1		then zone_1_level_1()
-		elseif ID == 2		then zone_1_level_2()
+		elseif ID == 2		then zone_2_level_1()
 		end
 	end
 	
 	closeWindow( Window_Map )
 
 	myWorld:createMap( level )
+	
+	if ID ~= "ZONE_START" then 
+		myEntity:setPosRandom( playerLUD )
+		
+		local playerX, playerY = myEntity:getCenter( playerLUD )
+		
+		myWorld:setCameraCenter( playerX, playerY )
+	else
+		myEntity:setCenter( playerLUD, 1300, 750 )
+		
+		myWorld:setCameraCenter( { myEntity:getCenter( playerLUD ) } )
+	end
+	
+	myCore:sendMessage( "NewLevel" )
 end
 
 function setupMap( mapID, objectID ) 
@@ -91,21 +106,79 @@ function zone_1_level_1()
 	}
 	
 	SpawnManager.addWave( { 
-		pricepool 	= 150;
+		pricepool 	= 250;
 		enemies		= {
 			{ enemy = enemyRanger, price = 50 };
 		};
 	} )
+	
+	SpawnManager.addBoss( getCharacter( "ENEMY_BOSS" ) )
 
 	local data = {
 		map			= {
-			tileset		= "TILESET_GRASS";
-			size		= { 36, 36 };		
+			tileset		= "TILESET_TEST";
+			size		= { 42, 42 };
+
+			layers 		= {
+				{
+					chance		= 0.55;
+					smoothing	= 3;
+				};
+			};
 		};
 		
 		objects 	= {
-			{ table = getObject( "TREE_GREENLEAF"), 		min = 2, 	max = 5 };
+			{ table = getObject( "TREE_GREENLEAF"), 		min = 2, 	max = 4 };
 			{ table = getObject( "ROCK_GREY_ONE"), 			min = 5, 	max = 15 };
+			{ table = getObject( "PLATFORM_BOSS"),			min = 1 };
+			{ table = getObject( "STRUCTURE_GATE_PORTAL"),	min = 1 };
+		};
+	}
+	
+	level = data 
+end
+
+function zone_2_level_1()
+	local enemyRanger = getCharacter( "ENEMY_RANGER" )
+	
+	enemyRanger.charData.loot = {
+		minItems		= 0;
+		maxItems		= 2;
+		minRunestones	= 1;
+		maxRunestones 	= 10;
+		runestoneChance	= 100;
+
+		table       	= {
+			getLootTable( "Equipment" );
+		}
+	}
+	
+	SpawnManager.addWave( { 
+		pricepool 	= 500;
+		enemies		= {
+			{ enemy = enemyRanger, price = 50 };
+		};
+	} )
+	
+	SpawnManager.addBoss( getCharacter( "ENEMY_BOSS" ) )
+
+	local data = {
+		map			= {
+			tileset		= "TILESET_WINTER";
+			size		= { 68, 68 };
+
+			layers 		= {
+				{
+					chance		= 0.53;
+					smoothing	= 4;
+				};
+			};
+		};
+		
+		objects 	= {
+			{ table = getObject( "TREE_GREENLEAF"), 		min = 2, 	max = 4 };
+			{ table = getObject( "ROCK_GREY_ONE"), 			min = 5, 	max = 15 };
+			{ table = getObject( "PLATFORM_BOSS"),			min = 1 };
 			{ table = getObject( "STRUCTURE_GATE_PORTAL"),	min = 3 };
 		};
 	}

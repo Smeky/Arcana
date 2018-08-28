@@ -20,6 +20,10 @@ void CTile::addSprite( const CSpriteWrapper& spriteWrapper ) {
     m_sprites.push_back( spriteWrapper );
 }
 
+void CTile::clearSprites() {
+    m_sprites.clear();
+}
+
 void CTile::setSolid( bool solid ) {
     m_solid     = solid;
 

@@ -9,7 +9,7 @@
 			<Target title="Debug">
 				<Option output="bin/Debug/Arcana" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
-				<Option type="1" />
+				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
@@ -20,7 +20,7 @@
 			<Target title="Release">
 				<Option output="bin/Release/Arcana" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
-				<Option type="1" />
+				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
@@ -53,6 +53,7 @@
 		<Unit filename="include/CAiCompoment.h" />
 		<Unit filename="include/CAnimation.h" />
 		<Unit filename="include/CAssetManager.h" />
+		<Unit filename="include/CAudioSystem.h" />
 		<Unit filename="include/CButton.h" />
 		<Unit filename="include/CButtonAbility.h" />
 		<Unit filename="include/CButtonImage.h" />
@@ -65,20 +66,26 @@
 		<Unit filename="include/CDimensional.h" />
 		<Unit filename="include/CDisplayPlayerStat.h" />
 		<Unit filename="include/CDisplayStats.h" />
+		<Unit filename="include/CDropboxElement.h" />
 		<Unit filename="include/CEffect.h" />
 		<Unit filename="include/CEffectManager.h" />
 		<Unit filename="include/CEntity.h" />
 		<Unit filename="include/CEntitySystem.h" />
 		<Unit filename="include/CGame.h" />
 		<Unit filename="include/CGuiButton.h" />
+		<Unit filename="include/CGuiCheckbox.h" />
+		<Unit filename="include/CGuiDropbox.h" />
 		<Unit filename="include/CGuiElement.h" />
+		<Unit filename="include/CGuiSlider.h" />
 		<Unit filename="include/CInputSystem.h" />
 		<Unit filename="include/CInterfaceSystem.h" />
 		<Unit filename="include/CInventory.h" />
 		<Unit filename="include/CItemdrag.h" />
 		<Unit filename="include/CLootSystem.h" />
 		<Unit filename="include/CMap.h" />
+		<Unit filename="include/CMapGen.h" />
 		<Unit filename="include/CMapGenerator.h" />
+		<Unit filename="include/CMapRoom.h" />
 		<Unit filename="include/CMessage.h" />
 		<Unit filename="include/CMessageListener.h" />
 		<Unit filename="include/CMessageSystem.h" />
@@ -86,12 +93,18 @@
 		<Unit filename="include/CParticleEffect.h" />
 		<Unit filename="include/CParticleEmitter.h" />
 		<Unit filename="include/CParticleSystem.h" />
+		<Unit filename="include/CPathFinder.h" />
+		<Unit filename="include/CPathGrid.h" />
+		<Unit filename="include/CPathHeap.h" />
+		<Unit filename="include/CPathNode.h" />
 		<Unit filename="include/CPlayer.h" />
 		<Unit filename="include/CProgressiveStat.h" />
 		<Unit filename="include/CProjectile.h" />
 		<Unit filename="include/CRNG.h" />
 		<Unit filename="include/CSceneManager.h" />
 		<Unit filename="include/CScriptSystem.h" />
+		<Unit filename="include/CSettingManager.h" />
+		<Unit filename="include/CSoundEmitter.h" />
 		<Unit filename="include/CSpatialSystem.h" />
 		<Unit filename="include/CSpriteWrapper.h" />
 		<Unit filename="include/CTesting.h" />
@@ -126,6 +139,7 @@
 		<Unit filename="src/CAiCompoment.cpp" />
 		<Unit filename="src/CAnimation.cpp" />
 		<Unit filename="src/CAssetManager.cpp" />
+		<Unit filename="src/CAudioSystem.cpp" />
 		<Unit filename="src/CButton.cpp" />
 		<Unit filename="src/CButtonAbility.cpp" />
 		<Unit filename="src/CButtonImage.cpp" />
@@ -138,20 +152,26 @@
 		<Unit filename="src/CDimensional.cpp" />
 		<Unit filename="src/CDisplayPlayerStat.cpp" />
 		<Unit filename="src/CDisplayStats.cpp" />
+		<Unit filename="src/CDropboxElement.cpp" />
 		<Unit filename="src/CEffect.cpp" />
 		<Unit filename="src/CEffectManager.cpp" />
 		<Unit filename="src/CEntity.cpp" />
 		<Unit filename="src/CEntitySystem.cpp" />
 		<Unit filename="src/CGame.cpp" />
 		<Unit filename="src/CGuiButton.cpp" />
+		<Unit filename="src/CGuiCheckbox.cpp" />
+		<Unit filename="src/CGuiDropbox.cpp" />
 		<Unit filename="src/CGuiElement.cpp" />
+		<Unit filename="src/CGuiSlider.cpp" />
 		<Unit filename="src/CInputSystem.cpp" />
 		<Unit filename="src/CInterfaceSystem.cpp" />
 		<Unit filename="src/CInventory.cpp" />
 		<Unit filename="src/CItemdrag.cpp" />
 		<Unit filename="src/CLootSystem.cpp" />
 		<Unit filename="src/CMap.cpp" />
+		<Unit filename="src/CMapGen.cpp" />
 		<Unit filename="src/CMapGenerator.cpp" />
+		<Unit filename="src/CMapRoom.cpp" />
 		<Unit filename="src/CMessage.cpp" />
 		<Unit filename="src/CMessageListener.cpp" />
 		<Unit filename="src/CMessageSystem.cpp" />
@@ -159,12 +179,18 @@
 		<Unit filename="src/CParticleEffect.cpp" />
 		<Unit filename="src/CParticleEmitter.cpp" />
 		<Unit filename="src/CParticleSystem.cpp" />
+		<Unit filename="src/CPathFinder.cpp" />
+		<Unit filename="src/CPathGrid.cpp" />
+		<Unit filename="src/CPathHeap.cpp" />
+		<Unit filename="src/CPathNode.cpp" />
 		<Unit filename="src/CPlayer.cpp" />
 		<Unit filename="src/CProgressiveStat.cpp" />
 		<Unit filename="src/CProjectile.cpp" />
 		<Unit filename="src/CRNG.cpp" />
 		<Unit filename="src/CSceneManager.cpp" />
 		<Unit filename="src/CScriptSystem.cpp" />
+		<Unit filename="src/CSettingManager.cpp" />
+		<Unit filename="src/CSoundEmitter.cpp" />
 		<Unit filename="src/CSpatialSystem.cpp" />
 		<Unit filename="src/CSpriteWrapper.cpp" />
 		<Unit filename="src/CTesting.cpp" />

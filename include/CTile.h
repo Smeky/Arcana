@@ -15,6 +15,7 @@ public:
     void        draw        ( sf::RenderTarget& window, sf::RenderStates states ) const;
 
     void        addSprite   ( const CSpriteWrapper& spriteWrapper );
+    void        clearSprites();
 
     void        setSolid    ( bool solid = true );
     bool        isSolid     () const;

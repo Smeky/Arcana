@@ -35,10 +35,19 @@ void CMap::update( const sf::Time& delta ) {
 
 void CMap::render( sf::RenderTarget& window, sf::RenderStates states ) const {
     sf::IntRect indexBox = calcIndex( CGame::WorldManager.Camera );
+//
+//    sf::View test;
+//
+//    test.reset( sf::FloatRect( 0, 0, CGame::GameWindow.getSize().x, CGame::GameWindow.getSize().y ) );
+//    test.setSize( m_size );
+//
+//    window.setView( test );
 
     for( auto it : m_layers ) {
         it->render( window, states, indexBox );
     }
+
+//    window.setView( window.getDefaultView() );
 }
 
 void CMap::renderTopLayer( sf::RenderTarget& window, sf::RenderStates states ) const {

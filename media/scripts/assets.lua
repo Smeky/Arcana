@@ -1,11 +1,19 @@
+
+
+local myAssets	= Assets
+local myAudio	= Audio
+
 function loadAssets() 
 	loadTextures()
 	loadFonts()
+	loadSounds()
+	loadMusic()
 end
 
 function loadTextures() 
 	local textures = {
 		{ ID = "GUI_WINDOW_MAINMENU", 					File = "window_mainmenu.png" };
+		{ ID = "GUI_WINDOW_OPTIONS", 					File = "window_options.png" };
 		{ ID = "GUI_WINDOW_CHARMENU", 					File = "window_charmenu.png" };
 		{ ID = "GUI_WINDOW_PAUSESCREEN", 				File = "window_pause.png" };
 		{ ID = "GUI_WINDOW_ABILITYBAR", 				File = "abilitybar_bg.png" };
@@ -17,14 +25,30 @@ function loadTextures()
 		
 		{ ID = "GUI_BUTTON_TEST", 						File = "button_test.png" };
 		{ ID = "GUI_BUTTON_WINDOW_EXIT", 				File = "button_window_exit.png" };
-		{ ID = "GUI_BUTTON_MAINMENU_PLAY", 				File = "button_mainplay.png" };
-		{ ID = "GUI_BUTTON_MAINMENU_EXIT", 				File = "button_pause_exit.png" };
+		{ ID = "GUI_BUTTON_MAINMENU_PLAY", 				File = "button_main_play.png" };
+		{ ID = "GUI_BUTTON_MAINMENU_OPTIONS", 			File = "button_main_options.png" };
+		{ ID = "GUI_BUTTON_MAINMENU_EXIT", 				File = "button_main_exit.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_GAME", 				File = "button_options_game.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_VIDEO", 				File = "button_options_video.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_AUDIO", 				File = "button_options_audio.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_KEYS", 				File = "button_options_keys.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_ACCEPT", 			File = "button_options_accept.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_APPLY", 				File = "button_options_apply.png" };
+		{ ID = "GUI_BUTTON_OPTIONS_CANCEL", 			File = "button_options_cancel.png" };
 		{ ID = "GUI_BUTTON_CHARMENU_ARROWLEFT", 		File = "button_charselect_left.png" };
 		{ ID = "GUI_BUTTON_CHARMENU_ARROWRIGHT", 		File = "button_charselect_right.png" };
+		{ ID = "GUI_BUTTON_PAUSEMENU_RETURN", 			File = "button_pause_return.png" };
 		{ ID = "GUI_BUTTON_PAUSEMENU_MENU", 			File = "button_pause_menu.png" };
+		{ ID = "GUI_BUTTON_PAUSEMENU_EXIT", 			File = "button_pause_exit.png" };
 		{ ID = "GUI_BUTTON_ABILITY", 					File = "button_ability.png" };
 		{ ID = "GUI_BUTTON_UPGRADE_BG", 				File = "button_upgrade_bg.png" };
 		{ ID = "GUI_BUTTON_UPGRADE", 					File = "button_upgrade.png" };
+		
+		{ ID = "GUI_CHECKBOX_TEST", 					File = "checkbox_test.png" };
+		{ ID = "GUI_CHECKBOX_CHECK_TEST", 				File = "icon_checkbox_check.png" };
+		
+		{ ID = "GUI_SLIDER_OPTIONS", 						File = "slider_options.png" };
+		{ ID = "GUI_SLIDER_BG_OPTIONS", 				File = "slider_options_bg.png" };
 		
 		{ ID = "GUI_ITEMSLOT_BG", 						File = "itemslot_bg.png" };
 		{ ID = "GUI_ITEMSLOT_SHADOW_HELM", 				File = "itemslot_helm.png" };
@@ -60,6 +84,13 @@ function loadTextures()
 		{ ID = "GUI_TRACK_RESOURCE_LIFEENERGY_BG", 		File = "tracker_rp_bg_lifeenergy.png" };
 		{ ID = "GUI_TRACK_RESOURCE_LIFEENERGY_PROG", 	File = "tracker_rp_prog_lifeenergy.png" };
 		
+		-- Pause screen
+		{ ID = "GUI_BG_PAUSESCREEN", 					File = "background_pausescreen.png" };
+		
+		-- Experience bar
+		{ ID = "GUI_EXPBAR_BG", 						File = "expbar_bg.png" };
+		{ ID = "GUI_EXPBAR_FRONT", 						File = "expbar_front.png" };
+		
 		-- Map
 		{ ID = "GUI_MAP_BG", 							File = "map_bg.png" };
 		{ ID = "GUI_BUTTON_GRASS", 						File = "button_map_grass.png" };
@@ -68,6 +99,7 @@ function loadTextures()
 		{ ID = "GUI_ICON_ABILITY_BLINK", 				File = "icon_ability_blink.png" };
 		{ ID = "GUI_ICON_ABILITY_FIREBALL", 			File = "icon_ability_fireball.png" };
 		{ ID = "GUI_ICON_ABILITY_POISONBOMB", 			File = "icon_ability_poisonbomb.png" };
+		{ ID = "GUI_ICON_ABILITY_FROSTSHIELD", 			File = "icon_ability_frostshield.png" };
 		
 		-- Upgrades
 		{ ID = "GUI_ICON_UPG_HEALTH_MAX", 				File = "icon_upgrade_health_percent.png" };
@@ -87,6 +119,7 @@ function loadTextures()
 		{ ID = "CHAR_PLAYER_NECROMANCER", 				File = "player_necromancer.png" };
 		
 		{ ID = "CHAR_ENEMY_RANGER", 					File = "enemy_ranger.png" };
+		{ ID = "CHAR_ENEMY_BOSS", 						File = "enemy_boss.png" };
 	}
 	
 	myAssets:loadTexture( "media/textures/chars/", textures )
@@ -104,7 +137,9 @@ function loadTextures()
 		{ ID = "OBJECT_TEST_FINISH", 					File = "testobject_action_finish.png" };
 
 		{ ID = "OBJECT_PORTAL_BLUE", 					File = "portal_blue.png" };
-		{ ID = "OBJECT_PLATFORM_SPAWNING", 				File = "platform_spawning.png" };
+		{ ID = "OBJECT_PORTAL_RED", 					File = "portal_red.png" };
+		{ ID = "OBJECT_PLATFORM_BOSS", 					File = "platform_level_boss.png" };
+		{ ID = "OBJECT_PILLAR_BOSS", 					File = "pillar_level_boss.png" };
 		{ ID = "OBJECT_ORB_SPAWNER_INIT", 				File = "orb_spawner_init.png" };
 		{ ID = "OBJECT_ORB_SPAWNER", 					File = "orb_spawner.png" };
 		{ ID = "OBJECT_STRUCTURE_GATE_PORTAL", 			File = "structure_gate_portal.png" };
@@ -127,8 +162,10 @@ function loadTextures()
 	myAssets:loadTexture( "media/textures/projectiles/", textures )
 	
 	textures = {
+		{ ID = "TILESET_TEST", 							File = "tileset_testing.png" };
 		{ ID = "TILESET_START", 						File = "start.png" };
 		{ ID = "TILESET_GRASS", 						File = "grass.png" };
+		{ ID = "TILESET_WINTER", 						File = "tileset_winter.png" };
 	}
 	
 	myAssets:loadTexture( "media/textures/tilesets/", textures )
@@ -168,6 +205,29 @@ function loadFonts()
 	}
 	
 	myAssets:loadFont( "media/fonts/", fonts )
+end
+
+function loadSounds()
+	sounds = {
+		-- Gui
+		{ ID = "BUTTON_BASE_CLICK", 					File = "button_base_click.ogg" };
+		
+		-- Projectiles
+		{ ID = "PROJECTILE_BOMB_POISON_DESPAWN", 		File = "projectile_bomb_poison_despawn.ogg" };
+		
+		-- Objects
+		-- { ID = "OBJECT_CRYSTAL_GLOW", 					File = "door.ogg" };
+	}
+	
+	myAssets:loadSound( "media/sounds/", sounds )
+end
+
+function loadMusic()
+	music	= {
+		{ ID = "MAINMENU", 								File = "menu.ogg" };
+	}
+	
+	myAudio:loadMusic( "media/music/", music )
 end
 
 register( "GameInit", loadAssets )

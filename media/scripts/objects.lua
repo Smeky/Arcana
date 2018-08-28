@@ -100,7 +100,7 @@ objects[ "HIDDEN_TELEPORTER" ] = {
 	data	= {
 		size	= { 50, 165 };
 	};
-
+	
 	functions = {
 		onInteract = function( ID ) local posX, posY = myWorld:getEntityCenter( ID );  interactWithWindow( posX, posY, Window_Map ) end;
 	}
@@ -118,15 +118,46 @@ objects[ "CHARACTER_UPGRADE" ] = {
 	}
 }
 
-objects[ "PILLAR_LEVELEND" ] = {
+objects[ "PLATFORM_BOSS" ] = {
 	data	= {
-		size	= { 70, 120 };
-		texture	= "OBJECT_CHARACTER_UPGRADE";
+		size	= { 280, 160 };
+		texture	= "OBJECT_PLATFORM_BOSS";
+		zLayer	= 1;
 	};
 	
-	functions = {
-		onInteract 	= function( ID ) nextLevel() end;
-	}
+	listenTo	= {
+		{  
+			name	= "WavesEnded";
+			action	= 
+				function( ID )
+					local thisX, thisY 	= myWorld:getEntityPos( ID )
+					local pillar 		= getObject( "PILLAR_BOSS" )
+					
+					pillar.pos	= { thisX + ( 280 - 65 ) / 2, thisY - 48 }
+					
+					myWorld:createObject( pillar )
+				end
+		};
+	};
+}
+
+objects[ "PILLAR_BOSS" ] = {
+	data	= {
+		size	= { 65, 145 };
+		texture	= "OBJECT_PILLAR_BOSS";
+		collbox	= { 0, 110, 65, 35 };
+		solid	= true;
+	};
+	
+	onCreation	= 
+		function( ID )  
+			local thisX, thisY		= myWorld:getEntityPos( ID )
+			local bossPortal		= getObject( "PORTAL_BOSS" )
+			
+			bossPortal.pos = { thisX + ( 65 - 50 ) / 2, thisY + 145 - 50 }
+			
+			myWorld:createObject( bossPortal )
+		end;
 }
 
 objects[ "PORTAL_BLUE" ] = {
@@ -147,13 +178,55 @@ objects[ "PORTAL_BLUE" ] = {
 	}
 }
 
+objects[ "PORTAL_BOSS" ] = {
+	data	= {
+		size	= { 50, 80 };
+		solid	= false;
+		texture	= "OBJECT_PORTAL_RED";
+	};
+	
+	listenTo = {
+		{ name = "SpawnBoss"; action = 
+					function( ID )
+						local thisX, thisY = myWorld:getEntityPos( ID )
+						
+						SpawnManager.spawnBoss( thisX, thisY )
+					end; };
+		{ name = "LevelEnd"; action = 
+					function( ID )
+						local thisX, thisY 	= myWorld:getEntityPos( ID )
+						local portal 		= getObject( "PORTAL_BOSS_INTERACTABLE" )
+						
+						portal.pos = { thisX, thisY }
+						
+						myWorld:despawnObject( ID )
+						myWorld:createObject( portal )
+					end; };
+	}
+}
+
+objects[ "PORTAL_BOSS_INTERACTABLE" ] = {
+	data	= {
+		size	= { 50, 80 };
+		solid	= false;
+		texture	= "OBJECT_PORTAL_RED";
+	};
+	
+	functions	= {
+		onInteract	= 
+			function( ID )
+				nextLevel()
+			end
+	};
+}
+
 objects[ "ROCK_GREY_FLOAT_ONE" ] = {
 	data	= {
 		size	= { 61, 59 };
 		texture	= "OBJECT_ROCK_GREY_FLOAT_ONE";
 		zLayer	= 16;
 	};
-
+	
 	ai 		= {
 		ID		= "LoopMovement";
 		data	= {
@@ -201,6 +274,7 @@ objects[ "CRYSTAL_PURPLE_STARTZONE" ] = {
 		};
 	};
 }
+
 
 
 

@@ -52,6 +52,10 @@ projectiles[ "BOMB_POISON" ] = {
 		texture 	= "PROJECTILE_BOMB_POISON";
 	};
 	
+	sounds		= {
+		onDespawn		= "PROJECTILE_BOMB_POISON_DESPAWN";
+	};
+	
 	functions	= {
 		onDespawn	= 
 			function( ID )
@@ -65,7 +69,7 @@ projectiles[ "BOMB_POISON" ] = {
 					if faction ~= myEntity:getFaction( v ) then
 						myEntity:addEffect( v, {  
 							ID 			= "EFFECT_POISON";
-							livetime	= 5;
+							duration	= 5;
 							ticktime	= 0.5;
 							color		= { 90, 120, 50, 255 };
 							type		= 1;

@@ -1,4 +1,4 @@
+id="UPG_HEALTH_MAX" locked="false" level="0"
 id="UPG_HEALTH_REGEN" locked="true" level="0"
-id="UPG_MOVESPD" locked="false" level="0"
-id="UPG_RESOURCE_MAX" locked="false" level="0"
-id="UPG_HEALTH_MAX" locked="false" level="5"
+id="UPG_RESOURCE_MAX" locked="true" level="0"
+id="UPG_MOVESPD" locked="true" level="0"

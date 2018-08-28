@@ -27,8 +27,21 @@ Done 10 - Rewrite code for Gui element active and shown. Active should be still 
 		
 7 - Setup a way to spawn particles only
 7 - Setup a way to spawn particles on projectiles despawn without the need of making new lua function
-		
 
+3 - Test performance for Z-Buffer rendering - There is if statement for entity being in the window ( check if it actully helps )
+
+3 - Rewrite gui elements -> Button releated should be derived ( too much copy pasting )
+
+5 - Utility : Add toValueFromLua and valueFromLua		( first accepts reference, second returns result )
+
+8 - Add support for adujsting sprite/text wrappers directly ( element LUD + wrapper ID ) -> Pos, size, clip, etc. 
+
+Camera note:
+	- Zoom in/out
+		
+Collision detection note:
+	- Consider call-back function after collision happened ( colliding entity/ies as arg )
+		
 Fix collision detection inbetween solid objects ( ie. tiles, etc. )
 	- Whenever collision happends instead of immidiet position adjustment, look of position that would be used is free.
 	- In case the position is not free, use some algorithm based on increasing raidius to find free position.

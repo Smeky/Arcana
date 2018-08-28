@@ -11,6 +11,7 @@ struct lua_State;
 //};
 
 namespace Util {
+int             compareTo       ( int first, int second );
 
 float           degreeToRad     ( const float degree );
 float           radToDegree     ( const float radian );
@@ -105,6 +106,15 @@ std::string     intToString     ( int num );
 std::string     uintToString    ( size_t num );
 std::string     floatToString   ( float num );
 std::string     decimalToString ( float num, size_t decimals = 1 );
+std::string     boolToString    ( bool value );
+
+bool            stringToBool    ( const std::string& text );
+float           stringToFloat   ( const std::string& text );
+
+void            valueFromString ( const std::string& line, const std::string& name, int& value );
+void            valueFromString ( const std::string& line, const std::string& name, size_t& value );
+void            valueFromString ( const std::string& line, const std::string& name, float& value );
+void            valueFromString ( const std::string& line, const std::string& name, bool& value );
 
 template<typename T>
 sf::Vector2<T> vectorFromTable( lua_State* state, int index, const char* field = nullptr ) {

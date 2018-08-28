@@ -10,6 +10,8 @@
 #include "CEntitySystem.h"
 #include "CSceneManager.h"
 #include "CAssetManager.h"
+#include "CAudioSystem.h"
+#include "CSettingManager.h"
 #include "CWorldManager.h"
 #include "CSpatialSystem.h"
 #include "CZBuffer.h"
@@ -17,6 +19,7 @@
 #include "CAbilityManager.h"
 #include "CEffectManager.h"
 #include "CUpgradeManager.h"
+#include "CPathFinder.h"
 
 #include "Circle.h"
 
@@ -28,12 +31,15 @@ public:
     static CEntitySystem        EntitySystem;
     static CSceneManager        SceneManager;
     static CAssetManager        AssetManager;
+    static CSettingManager      SettingsManager;
     static CWorldManager        WorldManager;
     static CSpatialSystem       SpatialSystem;
     static CZBuffer             ZBuffer;
     static CAbilityManager      AbilityManager;
     static CEffectManager       EffectManager;
     static CUpgradeManager      UpgradeManager;
+    static CAudioSystem         AudioSystem;
+    static CPathFinder          PathFinder;
 
     static sf::RenderWindow     GameWindow;
     static sf::Clock            GameClock;
@@ -41,6 +47,8 @@ public:
     static size_t               SceneID;
 
 public:
+                    CGame           ();
+
     bool            init            ();
     static void     close           ();
 
@@ -58,6 +66,7 @@ public:
     static int      luaLoadScript   ( lua_State* state );
     static int      luaSendMsg      ( lua_State* state );
     static int      luaSendDelayMsg ( lua_State* state );
+    static int      luaSetupWindow  ( lua_State* state );
 
 private:
     void            setupWindow     ();

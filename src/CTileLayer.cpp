@@ -24,8 +24,6 @@ void CTileLayer::update( const sf::Time& delta, const sf::IntRect& indexBox ) {
 }
 
 void CTileLayer::render( sf::RenderTarget& window, sf::RenderStates states, const sf::IntRect& indexBox ) const {
-//    cout << ( indexBox.width - indexBox.left ) * ( indexBox.height - indexBox.top ) << endl;
-
     for( int y = indexBox.top; y < indexBox.height; y++ ) {
         for( int x = indexBox.left; x < indexBox.width; x++ ) {
             size_t index = y * (int)m_size.x + x;
@@ -33,6 +31,10 @@ void CTileLayer::render( sf::RenderTarget& window, sf::RenderStates states, cons
             window.draw( m_tiles[ index ], states );
         }
     }
+
+//    for( auto& it : m_tiles ) {
+//        window.draw( it, states );
+//    }
 }
 
 void CTileLayer::setSize( const sf::Vector2f& size ) {

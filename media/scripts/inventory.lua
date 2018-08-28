@@ -6,8 +6,8 @@ Itemslot_ID = {}
 function initInventoryWindow()
 	local itemslots = {}
 
-	local window_W 	= 425
-	local window_H 	= 525
+	local window_W 	= 506
+	local window_H 	= 266
 
 	local slot_W	= 50
 	local slot_H	= 50
@@ -17,92 +17,75 @@ function initInventoryWindow()
 	local allSlots_W 	= ( slot_W + offset ) * 7
 	local allSlots_H 	= ( slot_H + offset ) * 3
 
-	local allSlots_X	= ( window_W - allSlots_W ) / 2
-	local allSlots_Y	=   window_H - allSlots_H - 18
+	local allSlots_X	= 234
+	local allSlots_Y	= 30
 
-    local equipCenter_X = window_W / 4 - slot_W / 2
-    local slotOffset    = 15
+    local equipCenter_X = 85
+	local equipBase_Y	= 23
+    local slotOffset    = 4
 
     -- Helm
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X, 40 };
+		pos			= { equipCenter_X, equipBase_Y };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
 	-- Amulet
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X + slot_W + slotOffset, 40 + slot_H / 2 };
+		pos			= { equipCenter_X + slot_W + slotOffset, equipBase_Y + slot_H / 2 };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
 	-- Chest
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X, 40 + slot_H + slotOffset };
+		pos			= { equipCenter_X, equipBase_Y + slot_H + slotOffset };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
 	-- Pants
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X, 40 + ( slot_H + slotOffset ) * 2 };
+		pos			= { equipCenter_X, equipBase_Y + ( slot_H + slotOffset ) * 2 };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
 	-- Gloves
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X - slot_W - slotOffset, 40 + ( slot_H + slotOffset ) * 1 + slot_H / 2 };
+		pos			= { equipCenter_X - slot_W - slotOffset, equipBase_Y + ( slot_H + slotOffset ) * 1 + slot_H / 2 };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
 	-- Shoes
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X, 40 + ( slot_H + slotOffset ) * 3 };
+		pos			= { equipCenter_X, equipBase_Y + ( slot_H + slotOffset ) * 3 };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
 	-- MainHand
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X - slot_W - slotOffset, 40 + ( slot_H + slotOffset ) * 2 + slot_H / 2 };
+		pos			= { equipCenter_X - slot_W - slotOffset, equipBase_Y + ( slot_H + slotOffset ) * 2 + slot_H / 2 };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 	
 	-- OffHand
 	table.insert( itemslots, {
 		type 		= "ITEMSLOT";
-		pos			= { equipCenter_X + slot_W + slotOffset, 40 + ( slot_H + slotOffset ) * 2 + slot_H / 2 };
+		pos			= { equipCenter_X + slot_W + slotOffset, equipBase_Y + ( slot_H + slotOffset ) * 2 + slot_H / 2 };
 		size		= { slot_W, slot_H };
-		textureBg 	= "GUI_ITEMSLOT_BG";
-		textureFront= "GUI_ITEMSLOT_BORDER";
 	} )
 
-	for yPos = 0, 2, 1 do
-		for xPos = 0, 6, 1 do
+	for yPos = 0, 3, 1 do
+		for xPos = 0, 4, 1 do
 			table.insert( itemslots, {
 				type 		= "ITEMSLOT";
 				pos			= { allSlots_X + xPos * ( slot_W + offset ), allSlots_Y + yPos * ( slot_H + offset ) };
 				size		= { slot_W, slot_H };
-				textureBg 	= "GUI_ITEMSLOT_BG";
-				textureFront= "GUI_ITEMSLOT_BORDER";
 			} )
 
 		end
@@ -141,7 +124,7 @@ end
 function getItemSlotIndex( ID )
 	for i, v in ipairs( Itemslot_ID ) do
 		if ID == v then
-			return i - 1
+			return i
 		end
 	end
 	

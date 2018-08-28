@@ -170,13 +170,17 @@ function createLevel_start()
 	
 	local Level_Start = {
 		map 		= {
-			tileset		= "TILESET_START";
-			size		= { 36, 36 };
-			static		= true;
+			tileset		= "TILESET_TEST";
+			size		= { 40, 40 };
+			emptyTresh	= 10;
+			solidTresh	= 10;
+			-- static		= true;
 			
 			layers		= {
-				layerBase,
-				layerTop
+				{
+					chance		= 0.70;
+					smoothing	= 3;
+				};
 			};		
 		};
 		

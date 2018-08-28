@@ -16,6 +16,7 @@ CEntity::CEntity()
 , m_aiComponent     ( nullptr )
 , m_moveVelocity    ( 0 )
 , m_moveAngle       ( 0 )
+, m_soundEmitter    ( false )
 , m_particleEffectID( 0 )
 {
     for( size_t i = 0; i < FUNC_TOTAL; i++ ) {
@@ -38,6 +39,10 @@ CEntity::~CEntity() {
     if( m_aiComponent != nullptr ) {
         delete m_aiComponent;
         m_aiComponent = nullptr;
+    }
+
+    if( m_soundEmitter ) {
+        CGame::AudioSystem.destroyEmitter( this );
     }
 
     CGame::WorldManager.ParticleSystem.removeEffect( m_particleEffectID );
@@ -173,6 +178,8 @@ void CEntity::onHit() {
 }
 
 void CEntity::onInteraction() {
+    playSound( EntitySounds::ONINTERACT );
+
     CGame::EntitySystem.callLuaFunction( m_ID, m_funcIDs[ FUNC_ONINTERACT ] );
 }
 
@@ -181,11 +188,34 @@ void CEntity::onDamageTaken( size_t sourceID, int damage ) {
 }
 
 void CEntity::onDeath() {
+    playSound( EntitySounds::ONDEATH );
+
     CGame::EntitySystem.callLuaFunction( m_ID, m_funcIDs[ FUNC_ONDEATH ] );
 }
 
 void CEntity::onDespawn() {
+    playSound( EntitySounds::ONDESPAWN );
+
     CGame::EntitySystem.callLuaFunction( m_ID, m_funcIDs[ FUNC_ONDESPAWN ] );
+}
+
+void CEntity::setSound( EntitySounds type, const std::string& ID ) {
+    // In case type is wrong
+    #ifndef DEBUG
+        if( type >= EntitySounds::TOTAL ) {
+            std::cout << "[D]Warning: Wrong Entity sound type: " << type << std::endl;
+        }
+    #endif // DEBUG
+
+    m_sounds[ type ]    = ID;
+}
+
+void CEntity::setSoundEmitter( bool hasEmitter ) {
+    m_soundEmitter   = hasEmitter;
+}
+
+bool CEntity::hasSoundEmitter() const {
+    return m_soundEmitter;
 }
 
 void CEntity::setTexture( const std::string& textureID ) {
@@ -287,7 +317,7 @@ void CEntity::doMove() {
 
                 if( collBox.intersects( entityBox ) ) {
                     // Make sure collision side is correct. This prevents rare glitch
-                    int collSide = getSideOfCollision( collBox, entityBox );
+//                    int collSide = getSideOfCollision( collBox, entityBox );
 
 //                    if( collSide == 0 || collSide == 1 ) {
                         // Find side of collision and adjust movement
@@ -318,6 +348,17 @@ void CEntity::updateDirOfAnimation( float* angle ) {
     if( m_animation.getRowIndex() != dirIndex ) {
         m_animation.setRowIndex( dirIndex );
     }
+}
+
+void CEntity::playSound( EntitySounds type ) {
+    // In case type is wrong
+    #ifndef DEBUG
+        if( type >= EntitySounds::TOTAL ) {
+            std::cout << "[D]Warning: Wrong Entity sound type: " << type << std::endl;
+        }
+    #endif // DEBUG
+
+    CGame::AudioSystem.playSoundRelative( m_sounds[ type ], CAudioSystem::EFFECT, getCenter() );
 }
 
 Direction CEntity::getSideOfCollision( const sf::FloatRect& first, const sf::FloatRect& second ) {

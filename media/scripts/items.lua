@@ -58,6 +58,10 @@
 		5	- Percent Remove
 ]]
 
+--[[
+	For effect use "effectID" value
+]]
+
 -- Forward declaration
 local item = {}
 
@@ -78,14 +82,13 @@ item[ "ITEM_AMULET_AENOANET" ] = {
 	slot		= 1;
 	stats		= {
 		{ stat = 2, 	value = 20, 	operand = 0 };
-		{ stat = 3, 	value = 200, 	operand = 0 };
+		-- { stat = 3, 	value = 200, 	operand = 0 };
 		{ stat = 4, 	value = 6, 		operand = 0 };
 		{ stat = 5, 	value = 5, 		operand = 0 };
 		{ stat = 8, 	value = 3, 		operand = 0 };
 		{ stat = 9, 	value = 200, 	operand = 0 };
 		{ stat = 12, 	value = 20, 	operand = 0 };
 	};
-	effectID	= "EFFECT_SLOW_FROSTSHIELD"
 }
 
 -- Leather set

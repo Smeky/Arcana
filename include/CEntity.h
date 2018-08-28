@@ -27,6 +27,13 @@ enum LuaFunction {
     FUNC_TOTAL      // Keep last
 };
 
+enum EntitySounds {
+    ONINTERACT,
+    ONDEATH,
+    ONDESPAWN,
+    TOTAL           // Keep last
+};
+
 enum EntityType {
     TYPE_ENTITY,
     TYPE_CHARACTER,
@@ -90,6 +97,11 @@ public:
             void        onDeath             ();
             void        onDespawn           ();
 
+            /** Sounds */
+            void        setSound            ( EntitySounds type, const std::string& ID );
+            void        setSoundEmitter     ( bool hasEmitter = true );
+            bool        hasSoundEmitter     () const;
+
             /** Animation manipulation */
             void        setTexture          ( const std::string& textureID );
             void        centerTexture       ();
@@ -108,6 +120,8 @@ protected:
     virtual void        updateAnimation     ( const sf::Time& delta );
 
     virtual void        updateDirOfAnimation( float* angle = nullptr );
+
+            void        playSound           ( EntitySounds type );
 
             // Note: Calculates side correctly, just returns wrong number
             Direction   getSideOfCollision  ( const sf::FloatRect& first, const sf::FloatRect& second );
@@ -130,6 +144,9 @@ protected:
 
     size_t              m_funcIDs[ FUNC_TOTAL ];
     std::map<std::string,size_t>    m_onEventFuncIds;
+
+    std::string         m_sounds[ EntitySounds::TOTAL ];
+    bool                m_soundEmitter;                 // If Entity has sound emitter
 
     size_t              m_particleEffectID;
 };

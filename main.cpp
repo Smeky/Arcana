@@ -1,5 +1,10 @@
 #include "CGame.h"
 
+#include <SFML/Audio.hpp>
+
+#include <iostream>
+using namespace std;
+
 int main() {
     CGame game;
 

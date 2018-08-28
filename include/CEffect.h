@@ -5,6 +5,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <string>
 
+#include <CScriptSystem.h>
 #include <CTimer.h>
 #include <CCharStat.h>
 #include <CCharacter.h>
@@ -96,7 +97,7 @@ private:
 
 class CEffectEvent : public CEffect {
 public:
-    void            onEventAction       ( int argc, ... );
+    void            onEventAction       ( void* source, int damage );
 };
 
 

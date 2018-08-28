@@ -6,7 +6,7 @@
 
 1434095874 c:\users\smeky\desktop\programming\arcana\include\cinputsystem.h
 
-1437233438 source:c:\users\smeky\desktop\programming\arcana\src\cinterfacesystem.cpp
+1438882111 source:c:\users\smeky\desktop\programming\arcana\src\cinterfacesystem.cpp
 	"CInterfaceSystem.h"
 	"cassert"
 	"lua.hpp"
@@ -25,9 +25,12 @@
 	"Utility.h"
 	<CGuiElement.h>
 	<CGuiButton.h>
+	<CGuiCheckbox.h>
+	<CGuiSlider.h>
+	<CGuiDropbox.h>
 	"iostream"
 
-1436653144 c:\users\smeky\desktop\programming\arcana\include\cinterfacesystem.h
+1438182372 c:\users\smeky\desktop\programming\arcana\include\cinterfacesystem.h
 	"SFML/Graphics.hpp"
 	"SFML/System/Time.hpp"
 	<unordered_map>
@@ -35,10 +38,12 @@
 	"CSpriteWrapper.h"
 	"CTextWrapper.h"
 
-1433765572 source:c:\users\smeky\desktop\programming\arcana\main.cpp
+1437779727 source:c:\users\smeky\desktop\programming\arcana\main.cpp
 	"CGame.h"
+	<SFML/Audio.hpp>
+	<iostream>
 
-1437478891 c:\users\smeky\desktop\programming\arcana\include\cgame.h
+1438552969 c:\users\smeky\desktop\programming\arcana\include\cgame.h
 	"SFML/Graphics.hpp"
 	"SFML/System.hpp"
 	"CScriptSystem.h"
@@ -47,6 +52,8 @@
 	"CEntitySystem.h"
 	"CSceneManager.h"
 	"CAssetManager.h"
+	"CAudioSystem.h"
+	"CSettingManager.h"
 	"CWorldManager.h"
 	"CSpatialSystem.h"
 	"CZBuffer.h"
@@ -54,9 +61,10 @@
 	"CAbilityManager.h"
 	"CEffectManager.h"
 	"CUpgradeManager.h"
+	"CPathFinder.h"
 	"Circle.h"
 
-1436442646 c:\users\smeky\desktop\programming\arcana\include\cscriptsystem.h
+1438182726 c:\users\smeky\desktop\programming\arcana\include\cscriptsystem.h
 	"lua.hpp"
 	"string"
 	"unordered_map"
@@ -86,15 +94,16 @@
 	<stdio.h>
 	"lua.h"
 
-1437478944 source:c:\users\smeky\desktop\programming\arcana\src\cgame.cpp
+1438807715 source:c:\users\smeky\desktop\programming\arcana\src\cgame.cpp
 	"CGame.h"
 	"cassert"
 	"typeinfo"
 	"CRNG.h"
 	<CEntity.h>
+	<SFML/Audio.hpp>
 	"iostream"
 
-1437672486 source:c:\users\smeky\desktop\programming\arcana\src\cscriptsystem.cpp
+1438879701 source:c:\users\smeky\desktop\programming\arcana\src\cscriptsystem.cpp
 	"CScriptSystem.h"
 	"cstdio"
 	"cstring"
@@ -106,6 +115,9 @@
 	"CInventory.h"
 	<CGuiElement.h>
 	<CGuiButton.h>
+	<CGuiCheckbox.h>
+	<CGuiSlider.h>
+	<CGuiDropbox.h>
 	"iostream"
 
 1429780454 c:\users\smeky\desktop\programming\_libs\sfml-2.3\include\sfml\graphics.hpp
@@ -513,35 +525,36 @@
 	"CMessageListener.h"
 	"CGame.h"
 
-1437672517 c:\users\smeky\desktop\programming\arcana\include\centitysystem.h
+1438543444 c:\users\smeky\desktop\programming\arcana\include\centitysystem.h
 	"vector"
 	"unordered_map"
 	"list"
 	"SFML/Graphics.hpp"
 	"SFML/System/Time.hpp"
 
-1437480996 source:c:\users\smeky\desktop\programming\arcana\src\cdimensional.cpp
+1438879350 source:c:\users\smeky\desktop\programming\arcana\src\cdimensional.cpp
 	"CDimensional.h"
 	<Utility.h>
 
-1437477730 c:\users\smeky\desktop\programming\arcana\include\cdimensional.h
+1438879354 c:\users\smeky\desktop\programming\arcana\include\cdimensional.h
 	"SFML/Graphics.hpp"
 
-1437577320 source:c:\users\smeky\desktop\programming\arcana\src\centity.cpp
+1438182767 source:c:\users\smeky\desktop\programming\arcana\src\centity.cpp
 	"CEntity.h"
 	"CGame.h"
 	"CAiCompoment.h"
 	"Utility.h"
 	"iostream"
 
-1437577170 c:\users\smeky\desktop\programming\arcana\include\centity.h
+1437825039 c:\users\smeky\desktop\programming\arcana\include\centity.h
 	"CDimensional.h"
 	"CAnimation.h"
 	"CMessageListener.h"
 
-1437672437 source:c:\users\smeky\desktop\programming\arcana\src\centitysystem.cpp
+1438543532 source:c:\users\smeky\desktop\programming\arcana\src\centitysystem.cpp
 	"CEntitySystem.h"
 	"cassert"
+	<sstream>
 	"lua.hpp"
 	"CGame.h"
 	"CMap.h"
@@ -572,10 +585,11 @@
 1435948020 c:\users\smeky\desktop\programming\arcana\include\cwindow.h
 	"CDimensional.h"
 
-1434095874 c:\users\smeky\desktop\programming\arcana\include\cassetmanager.h
-	"AssetHolder.h"
-	"SFML/Graphics/Texture.hpp"
-	"SFML/Graphics/Font.hpp"
+1437739503 c:\users\smeky\desktop\programming\arcana\include\cassetmanager.h
+	<AssetHolder.h>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Font.hpp>
+	<SFML/Audio/SoundBuffer.hpp>
 
 1434050818 c:\users\smeky\desktop\programming\arcana\include\assetholder.h
 	"string"
@@ -589,18 +603,18 @@
 	"CWidget.h"
 	"Utility.h"
 
-1437325606 c:\users\smeky\desktop\programming\arcana\include\utility.h
+1438436780 c:\users\smeky\desktop\programming\arcana\include\utility.h
 	"CGame.h"
 	"typeinfo"
 
-1434050818 source:c:\users\smeky\desktop\programming\arcana\src\cassetmanager.cpp
+1437742570 source:c:\users\smeky\desktop\programming\arcana\src\cassetmanager.cpp
 	"CAssetManager.h"
 	"lua.hpp"
 	"assert.h"
 	"CGame.h"
 	"iostream"
 
-1434747604 source:c:\users\smeky\desktop\programming\arcana\src\cbutton.cpp
+1439067753 source:c:\users\smeky\desktop\programming\arcana\src\cbutton.cpp
 	"CButton.h"
 	"CGame.h"
 	"iostream"
@@ -619,7 +633,7 @@
 	"CTextWrapper.h"
 	"CSpriteWrapper.h"
 
-1437330673 source:c:\users\smeky\desktop\programming\arcana\src\utility.cpp
+1438436818 source:c:\users\smeky\desktop\programming\arcana\src\utility.cpp
 	"Utility.h"
 	"sstream"
 	"math.h"
@@ -645,28 +659,28 @@
 1436717536 c:\users\smeky\desktop\programming\arcana\include\ctextwrapper.h
 	<CDimensional.h>
 
-1437479906 c:\users\smeky\desktop\programming\arcana\include\cworldmanager.h
+1438879713 c:\users\smeky\desktop\programming\arcana\include\cworldmanager.h
 	<list>
 	<CCamera.h>
 	<CCombatTextSystem.h>
 	<CParticleSystem.h>
 	<CLootSystem.h>
 
-1434123104 c:\users\smeky\desktop\programming\arcana\include\ccamera.h
+1438270684 c:\users\smeky\desktop\programming\arcana\include\ccamera.h
 	"CDimensional.h"
 
-1436874278 source:c:\users\smeky\desktop\programming\arcana\src\ccamera.cpp
+1438877857 source:c:\users\smeky\desktop\programming\arcana\src\ccamera.cpp
 	"CCamera.h"
 	"CGame.h"
 
-1436992760 source:c:\users\smeky\desktop\programming\arcana\src\ctile.cpp
+1438441231 source:c:\users\smeky\desktop\programming\arcana\src\ctile.cpp
 	"CTile.h"
 
-1436986354 c:\users\smeky\desktop\programming\arcana\include\ctile.h
+1438188967 c:\users\smeky\desktop\programming\arcana\include\ctile.h
 	<CDimensional.h>
 	<CSpriteWrapper.h>
 
-1437480297 source:c:\users\smeky\desktop\programming\arcana\src\cworldmanager.cpp
+1438879669 source:c:\users\smeky\desktop\programming\arcana\src\cworldmanager.cpp
 	"CWorldManager.h"
 	"assert.h"
 	"lua.hpp"
@@ -678,9 +692,10 @@
 	"Utility.h"
 	<LuaWrapper.h>
 	<CRNG.h>
+	<CMapGen.h>
 	"iostream"
 
-1437391668 source:c:\users\smeky\desktop\programming\arcana\src\cmapgenerator.cpp
+1437948918 source:c:\users\smeky\desktop\programming\arcana\src\cmapgenerator.cpp
 	"CMapGenerator.h"
 	<cassert>
 	<lua.hpp>
@@ -693,25 +708,25 @@
 	<LuaWrapper.h>
 	<iostream>
 
-1437055114 c:\users\smeky\desktop\programming\arcana\include\cmapgenerator.h
+1437948926 c:\users\smeky\desktop\programming\arcana\include\cmapgenerator.h
 	"SFML/Graphics.hpp"
 	"string"
 	"vector"
 	"list"
 
-1437070404 c:\users\smeky\desktop\programming\arcana\include\cmap.h
+1438092077 c:\users\smeky\desktop\programming\arcana\include\cmap.h
 	<SFML/System/Vector2.hpp>
 	<SFML/Graphics.hpp>
 	<vector>
 
-1437342602 source:c:\users\smeky\desktop\programming\arcana\src\cmap.cpp
+1438807469 source:c:\users\smeky\desktop\programming\arcana\src\cmap.cpp
 	"CMap.h"
 	<CGame.h>
 	<CTileLayer.h>
 	<Utility.h>
 	<iostream>
 
-1434050818 source:c:\users\smeky\desktop\programming\arcana\src\crng.cpp
+1437949075 source:c:\users\smeky\desktop\programming\arcana\src\crng.cpp
 	"CRNG.h"
 	"stdlib.h"
 	"time.h"
@@ -744,7 +759,7 @@
 	<CTimer.h>
 	<CSpriteWrapper.h>
 
-1437577220 source:c:\users\smeky\desktop\programming\arcana\src\ccharacter.cpp
+1438346421 source:c:\users\smeky\desktop\programming\arcana\src\ccharacter.cpp
 	"CCharacter.h"
 	<assert.h>
 	<CGame.h>
@@ -755,7 +770,7 @@
 	<Utility.h>
 	<iostream>
 
-1437251411 c:\users\smeky\desktop\programming\arcana\include\ccharacter.h
+1438344663 c:\users\smeky\desktop\programming\arcana\include\ccharacter.h
 	<CEntity.h>
 	<CharacterStats.h>
 	<CharacterFaction.h>
@@ -795,7 +810,7 @@
 	"CGame.h"
 	"CharacterFaction.h"
 
-1437654147 source:c:\users\smeky\desktop\programming\arcana\src\cprojectile.cpp
+1438345482 source:c:\users\smeky\desktop\programming\arcana\src\cprojectile.cpp
 	"CProjectile.h"
 	"CGame.h"
 	"Utility.h"
@@ -859,9 +874,9 @@
 
 1434449838 c:\users\smeky\desktop\programming\arcana\include\characterstats.h
 
-1434374284 c:\users\smeky\desktop\programming\arcana\include\cprogressivestat.h
+1437675681 c:\users\smeky\desktop\programming\arcana\include\cprogressivestat.h
 
-1434555176 source:c:\users\smeky\desktop\programming\arcana\src\cprogressivestat.cpp
+1437675755 source:c:\users\smeky\desktop\programming\arcana\src\cprogressivestat.cpp
 	"CProgressiveStat.h"
 
 1434482334 c:\users\smeky\desktop\programming\arcana\include\characterfaction.h
@@ -980,32 +995,38 @@
 	"CPlayer.h"
 	"Utility.h"
 
-1434630620 source:c:\users\smeky\desktop\programming\arcana\src\caicharcomponent.cpp
+1438884656 source:c:\users\smeky\desktop\programming\arcana\src\caicharcomponent.cpp
 	"CAiCharComponent.h"
 	"CGame.h"
+	<CPlayer.h>
 	"CCharacter.h"
 	"Utility.h"
+	<iostream>
 
-1434554940 c:\users\smeky\desktop\programming\arcana\include\caicharcomponent.h
+1438515397 c:\users\smeky\desktop\programming\arcana\include\caicharcomponent.h
 	"SFML/System/Time.hpp"
+	<SFML/System/Vector2.hpp>
+	<vector>
+	<CTimer.h>
 
-1435670650 source:c:\users\smeky\desktop\programming\arcana\src\ccombattext.cpp
+1438460099 source:c:\users\smeky\desktop\programming\arcana\src\ccombattext.cpp
 	"CCombatText.h"
 	"iostream"
 
-1435948042 c:\users\smeky\desktop\programming\arcana\include\ccombattext.h
+1438460102 c:\users\smeky\desktop\programming\arcana\include\ccombattext.h
 	"CDimensional.h"
 	"CTextWrapper.h"
 	"CTimer.h"
 
-1434557704 c:\users\smeky\desktop\programming\arcana\include\ccombattextsystem.h
+1438345304 c:\users\smeky\desktop\programming\arcana\include\ccombattextsystem.h
 	"SFML/Graphics.hpp"
 	"SFML/System/Time.hpp"
 
-1434559318 source:c:\users\smeky\desktop\programming\arcana\src\ccombattextsystem.cpp
+1438460093 source:c:\users\smeky\desktop\programming\arcana\src\ccombattextsystem.cpp
 	"CCombatTextSystem.h"
 	"CGame.h"
 	"CCombatText.h"
+	<CCharacter.h>
 	"Utility.h"
 	"CRNG.h"
 
@@ -1123,7 +1144,7 @@
 	"CWidget.h"
 	"CTextWrapper.h"
 
-1437498522 source:c:\users\smeky\desktop\programming\arcana\src\cparticle.cpp
+1438170602 source:c:\users\smeky\desktop\programming\arcana\src\cparticle.cpp
 	"CParticle.h"
 	<Utility.h>
 
@@ -1193,7 +1214,7 @@
 1436537592 source:c:\users\smeky\desktop\programming\arcana\src\luawrapper.cpp
 	"LuaWrapper.h"
 
-1437673568 source:c:\users\smeky\desktop\programming\arcana\src\ceffectmanager.cpp
+1438018095 source:c:\users\smeky\desktop\programming\arcana\src\ceffectmanager.cpp
 	"CEffectManager.h"
 	<lua.hpp>
 	<CGame.h>
@@ -1207,18 +1228,20 @@
 	<vector>
 	<stddef.h>
 
-1437673490 c:\users\smeky\desktop\programming\arcana\include\ceffect.h
+1438029441 c:\users\smeky\desktop\programming\arcana\include\ceffect.h
 	<SFML/System/Time.hpp>
 	<SFML/Graphics/Color.hpp>
 	<string>
+	<CScriptSystem.h>
 	<CTimer.h>
 	<CCharStat.h>
 	<CCharacter.h>
 
-1437673525 source:c:\users\smeky\desktop\programming\arcana\src\ceffect.cpp
+1438083650 source:c:\users\smeky\desktop\programming\arcana\src\ceffect.cpp
 	"CEffect.h"
 	<CGame.h>
 	<CCharacter.h>
+	<iostream>
 
 1436444946 source:c:\users\smeky\desktop\programming\arcana\src\cwidgeteffect.cpp
 	"CWidgetEffect.h"
@@ -1236,15 +1259,17 @@
 	"CTesting.h"
 	<iostream>
 
-1437569729 source:c:\users\smeky\desktop\programming\arcana\src\cguielement.cpp
+1438083265 source:c:\users\smeky\desktop\programming\arcana\src\cguielement.cpp
 	"CGuiElement.h"
 	<lua.hpp>
 	<CGuiButton.h>
+	<CGuiCheckbox.h>
+	<CGuiSlider.h>
 	<Utility.h>
 	<LuaWrapper.h>
 	<iostream>
 
-1437300461 c:\users\smeky\desktop\programming\arcana\include\cguielement.h
+1438078742 c:\users\smeky\desktop\programming\arcana\include\cguielement.h
 	<string>
 	<vector>
 	<CDimensional.h>
@@ -1267,14 +1292,14 @@
 	<string>
 	<vector>
 
-1437304565 source:c:\users\smeky\desktop\programming\arcana\src\cguibutton.cpp
+1438177502 source:c:\users\smeky\desktop\programming\arcana\src\cguibutton.cpp
 	"CGuiButton.h"
 	<CGame.h>
 	<Utility.h>
 	<LuaWrapper.h>
 	<iostream>
 
-1437302397 c:\users\smeky\desktop\programming\arcana\include\cguibutton.h
+1437997607 c:\users\smeky\desktop\programming\arcana\include\cguibutton.h
 	<CGuiElement.h>
 
 1433765572 source:c:\users\jana\downloads\nová složka\arcana\main.cpp
@@ -2437,7 +2462,7 @@
 	"lua.hpp"
 	"iostream"
 
-1437047169 source:c:\users\smeky\desktop\programming\arcana\src\ctilelayer.cpp
+1438807467 source:c:\users\smeky\desktop\programming\arcana\src\ctilelayer.cpp
 	"CTileLayer.h"
 	<CGame.h>
 	<iostream>
@@ -2449,7 +2474,163 @@
 	<SFML/Graphics.hpp>
 	<list>
 
-1437479845 source:c:\users\smeky\desktop\programming\arcana\src\czbuffer.cpp
+1437754679 source:c:\users\smeky\desktop\programming\arcana\src\czbuffer.cpp
 	"CZBuffer.h"
 	<CDimensional.h>
+	<CGame.h>
+	<Utility.h>
+
+1437830607 c:\users\smeky\desktop\programming\arcana\include\caudiosystem.h
+	<SFML/Audio/Music.hpp>
+	<SFML/Audio/Sound.hpp>
+	<SFML/System/Vector2.hpp>
+	<map>
+
+1437997401 source:c:\users\smeky\desktop\programming\arcana\src\caudiosystem.cpp
+	"CAudioSystem.h"
+	<lua.hpp>
+	<CSoundEmitter.h>
+	<CGame.h>
+	<Utility.h>
+	<iostream>
+
+1437837120 source:c:\users\smeky\desktop\programming\arcana\src\csoundemitter.cpp
+	"CSoundEmitter.h"
+	<CEntity.h>
+	<CGame.h>
+	<Utility.h>
+	<SFML/Audio/Listener.hpp>
+	<iostream>
+
+1437829442 c:\users\smeky\desktop\programming\arcana\include\csoundemitter.h
+	<SFML/Audio/Sound.hpp>
+	<SFML/Audio/SoundBuffer.hpp>
+
+1437846836 source:c:\users\smeky\desktop\programming\arcana\src\cguicheckbox.cpp
+	"CGuiCheckbox.h"
+	<Utility.h>
+	<LuaWrapper.h>
+	<iostream>
+
+1437844295 c:\users\smeky\desktop\programming\arcana\include\cguicheckbox.h
+	<CGuiElement.h>
+
+1437922521 c:\users\smeky\desktop\programming\arcana\include\csettingmanager.h
+
+1437927902 source:c:\users\smeky\desktop\programming\arcana\src\csettingmanager.cpp
+	"CSettingManager.h"
+	<fstream>
+	<ostream>
+	<lua.hpp>
+	<CGame.h>
+	<Utility.h>
+	<LuaWrapper.h>
+	<iostream>
+
+1438040679 source:c:\users\smeky\desktop\programming\arcana\src\cguislider.cpp
+	"CGuiSlider.h"
+	<lua.hpp>
+	<CGame.h>
+	<Utility.h>
+	<LuaWrapper.h>
+	<iostream>
+
+1437929076 c:\users\smeky\desktop\programming\arcana\include\cguislider.h
+	<CGuiElement.h>
+
+1438699724 source:c:\users\smeky\desktop\programming\arcana\src\cmapgen.cpp
+	"CMapGen.h"
+	<lua.hpp>
+	<list>
+	<algorithm>
+	<CMap.h>
+	<CMapRoom.h>
+	<CTile.h>
+	<CTileLayer.h>
+	<CRNG.h>
+	<CGame.h>
+	<Utility.h>
+	<LuaWrapper.h>
+	<iostream>
+
+1438195169 c:\users\smeky\desktop\programming\arcana\include\cmapgen.h
+	<SFML/System/Vector2.hpp>
+	<string>
+	<vector>
+	<memory>
+
+1438118538 source:c:\users\smeky\desktop\programming\arcana\src\cmaproom.cpp
+	"CMapRoom.h"
+	<algorithm>
+
+1438118412 c:\users\smeky\desktop\programming\arcana\include\cmaproom.h
+	<SFML/System/Vector2.hpp>
+	<vector>
+	<cstdlib>
+
+1438174843 source:c:\users\smeky\desktop\programming\arcana\src\cdropboxelement.cpp
+	"CDropboxElement.h"
+	<lua.hpp>
+	<Utility.h>
+	<LuaWrapper.h>
+	<iostream>
+
+1438174289 c:\users\smeky\desktop\programming\arcana\include\cdropboxelement.h
+	<CDimensional.h>
+	<CSpriteWrapper.h>
+
+1438182280 source:c:\users\smeky\desktop\programming\arcana\src\cguidropbox.cpp
+	"CGuiDropbox.h"
+	<lua.hpp>
+	<Utility.h>
+	<LuaWrapper.h>
+	<iostream>
+
+1438181867 c:\users\smeky\desktop\programming\arcana\include\cguidropbox.h
+	<vector>
+	<CGuiElement.h>
+	<CDropboxElement.h>
+
+1438807779 source:c:\users\smeky\desktop\programming\arcana\src\cpathfinder.cpp
+	"CPathFinder.h"
+	<cstdlib>
+	<math.h>
+	<CPathHeap.h>
+	<iostream>
+
+1438645363 c:\users\smeky\desktop\programming\arcana\include\cpathfinder.h
+	<SFML/System/Vector2.hpp>
+	<vector>
+	<CPathGrid.h>
+
+1438534984 c:\users\smeky\desktop\programming\arcana\include\cpathsearchcell.h
+	<SFML/System/Vector2.hpp>
+
+1438807665 source:c:\users\smeky\desktop\programming\arcana\src\cpathgrid.cpp
+	"CPathGrid.h"
+	<CGame.h>
+	<CMap.h>
+	<Utility.h>
+	<iostream>
+
+1438645031 c:\users\smeky\desktop\programming\arcana\include\cpathgrid.h
+	<vector>
+	<cstddef>
+	<CPathNode.h>
+
+1438561336 source:c:\users\smeky\desktop\programming\arcana\src\cpathnode.cpp
+	"CPathNode.h"
+	<Utility.h>
+
+1438559770 c:\users\smeky\desktop\programming\arcana\include\cpathnode.h
+	<SFML/System/Vector2.hpp>
+
+1438634204 source:c:\users\smeky\desktop\programming\arcana\src\cpathheap.cpp
+	"CPathHeap.h"
+	<CPathNode.h>
+	<iostream>
+
+1438559920 c:\users\smeky\desktop\programming\arcana\include\cpathheap.h
+	<vector>
+	<stddef.h>
 

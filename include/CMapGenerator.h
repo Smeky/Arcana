@@ -25,9 +25,6 @@ public:
     CMap*           generateMap         ( const std::string& tilesetID, const sf::Vector2f& mapSize );
 
 private:
-    // Load data from lua table and give it to Entity system so they can be created
-    void            createObjects       ( lua_State* state, int index );
-
     // Count surrounding alive tiles
     int             countAlives         ( doubleVecBool alives, const sf::Vector2u& index, const sf::Vector2f& mapSize );
 

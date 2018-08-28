@@ -15,6 +15,8 @@ class CGuiElement;
 enum class GuiType : int {
     GUI_DEFAULT,
     GUI_BUTTON,
+    GUI_CHECKBOX,
+    GUI_SLIDER,
     GUI_COUNTER     // Keep last
 };
 
@@ -48,6 +50,7 @@ public:
 
             void            setRelativePos      ( const sf::Vector2f& pos );
             sf::Vector2f    getRelativePos      () const;
+            sf::Vector2f    getAbsolutePos      () const;
 
             void            addElement          ( CGuiElement* element );
 
@@ -59,7 +62,10 @@ public:
             bool            isShown             () const;
             bool            reverseShown        ();
 
+    // Crate new element and loads everything out of given table
     static  CGuiElement*    setupFromTable      ( lua_State* state, int index, bool* result = nullptr, const CGuiElement* parent = nullptr );
+    // Loads everything out of given table to the element
+    static  bool            loadFromTable       ( lua_State* state, int index, CGuiElement* element, const CGuiElement* parent = nullptr );
 
     static  std::string     guiTypeToString     ( const GuiType& type );
 

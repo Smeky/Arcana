@@ -17,8 +17,8 @@ abilities[ "BLINK" ] = {
 		name		= "Blink";
 		description	= "Teleports caster";
 		icon		= "GUI_ICON_ABILITY_BLINK";
-		cost		= 0;
-		
+		cost		= 20;
+		cooldown	= 10.0;
 	};
 	
 	onCast	= 	function( caster, destX, destY )
@@ -50,9 +50,9 @@ abilities[ "FIREBALL" ] = {
 		name		= "Fireball";
 		description	= "It's hot!";
 		icon		= "GUI_ICON_ABILITY_FIREBALL";
-		castTime	= 1.0;
-		cooldown	= 2.0;
-		
+		castTime	= 0.5;
+		cooldown	= 3.0;
+		cost		= 15;
 	};
 	
 	onCast	= 	function( caster, destX, destY )
@@ -60,8 +60,25 @@ abilities[ "FIREBALL" ] = {
 					local casterStats	= myEntity:getCharacterStats( caster )
 					local angle 		= angleByVectors( posX, posY, destX, destY )
 	
+					casterStats.dmgMin	= casterStats.dmgMin * 2.5;
+					casterStats.dmgMax	= casterStats.dmgMax * 2.5;
+	
 					myWorld:createProjectile( getProjectile( "FIREBALL", posX, posY, angle, casterStats.castDistance or 250, casterStats ) )
 				end
+}
+
+abilities[ "FROSTSHIELD" ] = {
+	data	= { 
+		name		= "Frost Shield";
+		description	= "Slows enemies that hits you";
+		icon		= "GUI_ICON_ABILITY_FROSTSHIELD";
+		cooldown	= 0.0;
+		cost		= 0;
+	};
+	
+	onCast	= 	function( caster, destX, destY )
+					myEntity:addEffect( caster, getEffect( "EFFECT_FROSTSHILED" ) )
+				end;
 }
 
 abilities[ "POISON_BOMB" ] = {
@@ -70,7 +87,8 @@ abilities[ "POISON_BOMB" ] = {
 		description	= "Deals damage over time to enemies";
 		icon		= "GUI_ICON_ABILITY_POISONBOMB";
 		castTime	= 0;
-		cooldown	= 0;
+		cost		= 15;
+		cooldown	= 5.0;
 	};
 	
 	onCast	= 	function( caster, destX, destY )
@@ -79,7 +97,8 @@ abilities[ "POISON_BOMB" ] = {
 					local angle 		= angleByVectors( posX, posY, destX, destY )
 					local distance 		= distanceBetweenVectors( posX, posY, destX, destY )
 					
-					if distance > 250 then distance = 250 end
+					local maxDistance = 700
+					if distance > maxDistance then distance = maxDistance end
 					
 					casterStats.dmgMin	= 0
 					casterStats.dmgMax	= 0

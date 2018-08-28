@@ -9,42 +9,57 @@ local waveEnded		= false
 local levelStarted	= false
 local waves			= {}
 
+local bosses		= {}
+local bossCounter	= 0
+
+local timerLevelStart	= {}
+timerLevelStart.start	= nil
+timerLevelStart.limit	= 5.0
+
+local timerEnemySpawn	= {}
+timerEnemySpawn.start	= nil
+timerEnemySpawn.limit	= 2.0
+
+local timerWaveDelay	= {}
+timerWaveDelay.start	= nil
+timerWaveDelay.limit	= 5.0
+
+local timerLevelEnd		= {}
+timerLevelEnd.start		= nil
+timerLevelEnd.limit		= 5.0
+
+local timerBossSpawn	= {}
+timerBossSpawn.start	= nil
+timerBossSpawn.limit	= 3.0
+
 --[[
-	waves = {	
-		{
-			pricepool
-			enemies = {
-				{ enemy, price };
-				{ enemy, price };
-				{ enemy, price };
-				{ enemy, price };
-				{ enemy, price };
-				{ enemy, price };
-				{ enemy, price };
-			}
-		};
-	}
+
+				REWRITE THIS FILE !!!
+
 ]]
 
---[[
--- Basic initialization
-SpawnManager.canSpawn		= function()				return checkPricepool() end
-SpawnManager.setPricepool 	= function( pool ) 			pricepool = pool end
-SpawnManager.addEnemy		= function( enemy, cost ) 	enemy.cost = cost; table.insert( enemies, enemy ) end
-SpawnManager.setEnemies		= function( allEnemies ) 	enemies = allEnemies end
-SpawnManager.spawnEnemy		= 
-	function( posX, posY )	
-		if checkPricepool() == false then return end
-
-		local enemy = rollForEnemy() 
-		
-		pricepool = pricepool - enemy.cost
-		
-		enemy.pos = { posX, posY }
+local function setLevelStart()
+	levelStarted	= true
+	waveEnded		= false
 	
-		myWorld:createEnemy( enemy ) 
+	timerEnemySpawn.start	= myWorld:getWorldTime()
+	
+	myCore:sendMessage( "LevelStart" )
+end
+
+local function spawnEnemy()
+	if levelStarted == true and waveEnded == false then
+		myCore:sendMessage( "SpawnEnemy" )
+
+		timerEnemySpawn.start	= myWorld:getWorldTime()
 	end
-]]
+end
+
+local function spawnBossObject()
+	myCore:sendMessage( "WavesEnded" )
+	
+	timerBossSpawn.start = myWorld:getWorldTime()
+end
 
 SpawnManager.reset	= 
 	function()
@@ -53,7 +68,15 @@ SpawnManager.reset	=
 		waveEnded		= false
 		levelStarted	= false
 		
+		timerLevelStart.start	= nil
+		timerEnemySpawn.start	= nil
+		timerWaveDelay.start	= nil
+		timerLevelEnd.start		= nil
+		timerBossSpawn.start	= nil
+		
 		waves			= {}
+		bosses			= {}
+		bossCounter		= 0
 	end
 
 SpawnManager.addWave = 
@@ -62,19 +85,71 @@ SpawnManager.addWave =
 		
 		table.insert( waves, wave )
 	end
+
+SpawnManager.addBoss = 
+	function( boss )
+		bossCounter	= bossCounter + 1
+	
+		table.insert( bosses, boss )
+	end
 	
 SpawnManager.update	= 
 	function()
-		if levelStarted == false then return end
+		if timerLevelStart.start ~= nil then
 	
-		if waveEnded == false then
-			if checkPricepool() == false then
-				waveEnded = true
+			local worldTime = myWorld:getWorldTime()
+			
+			if timerBossSpawn.start ~= nil then
+				if worldTime - timerBossSpawn.start > timerBossSpawn.limit then
+					timerBossSpawn.start = nil
 				
-				if waveCounter < waveAmount then
-					myCore:sendDelayedMessage( "NextWave", 	1.0 )
-				else
-					myCore:sendDelayedMessage( "WavesEnd", 	1.0 )
+					myCore:sendMessage( "SpawnBoss" )
+				end
+			end
+			
+			if levelStarted == false then 
+				if worldTime - timerLevelStart.start > timerLevelStart.limit then
+					setLevelStart()
+				end
+
+				return
+			end
+			
+			if timerWaveDelay.start ~= nil then
+				if worldTime - timerWaveDelay.start > timerWaveDelay.limit then
+					timerWaveDelay.start	= nil
+					
+					myCore:sendMessage( "NextWave" )
+				end
+			end
+			
+			if timerLevelEnd.start ~= nil then
+				if worldTime - timerLevelEnd.start > timerLevelEnd.limit then
+					timerLevelEnd.start	= nil
+					
+					spawnBossObject()
+				end
+			end
+			
+			
+			
+			if worldTime - timerEnemySpawn.start > timerEnemySpawn.limit then
+				spawnEnemy()
+			end
+		
+			if waveEnded == false then
+				if checkPricepool() == false then
+					waveEnded = true
+					
+					if waveCounter < waveAmount then
+						timerWaveDelay.start	= worldTime
+						
+						-- myCore:sendDelayedMessage( "NextWave", 	1.0 )
+					else
+						timerLevelEnd.start		= worldTime
+						
+						-- myCore:sendDelayedMessage( "WavesEnd", 	1.0 )
+					end
 				end
 			end
 		end
@@ -87,6 +162,7 @@ SpawnManager.canSpawn =
 
 SpawnManager.spawnEnemy	= 
 	function( posX, posY )
+		if levelStarted == false then return end
 		if checkPricepool() == false then return end
 
 		local enemy, price = rollForEnemy()
@@ -96,6 +172,15 @@ SpawnManager.spawnEnemy	=
 		enemy.pos = { posX, posY }
 	
 		myWorld:createEnemy( enemy ) 
+	end
+	
+SpawnManager.spawnBoss =
+	function( posX, posY )
+		for _, v in pairs( bosses ) do
+			v.pos = { posX, posY }
+			
+			myWorld:createEnemy( v )
+		end
 	end
 	
 SpawnManager.endLevel = 
@@ -144,32 +229,26 @@ local function nextWave()
 	
 	waveEnded	= false
 	
-	myCore:sendMessage( "SpawnEnemy" )
+	spawnEnemy()
 end
 
-local function setLevelStart()
-	levelStarted	= true
-	waveEnded		= false
-	
-	myCore:sendMessage( "SpawnEnemy" )
-end
-
-local function spawnEnemy()
-	if levelStarted == true and waveEnded == false then
-		myCore:sendDelayedMessage( "SpawnEnemy", 1.0 )
+-- Whenever new map is created, check if there are any enemy 
+-- waves and send delayed message about level start
+local function onNewLevel()
+	if waveAmount > 0 then
+		timerLevelStart.start		= myWorld:getWorldTime()
 	end
 end
 
-local function spawnBossObject()
-	local object = getObject( "PILLAR_LEVELEND" )
+local function bossDefeated() 
+	bossCounter = bossCounter - 1
 	
-	object.pos 	= { 1100, 1100 };
-	
-	myWorld:createObject( object );
+	if bossCounter == 0 then
+		myCore:sendMessage( "LevelEnd" )
+	end
 end
 
-register( "LevelStart", 	setLevelStart )
+register( "NewLevel", 		onNewLevel )
 register( "LevelEnd",		SpawnManager.endLevel )
 register( "NextWave", 		nextWave )
-register( "SpawnEnemy", 	spawnEnemy )
-register( "WavesEnd",		spawnBossObject )
+register( "BossDefeated", 	bossDefeated )

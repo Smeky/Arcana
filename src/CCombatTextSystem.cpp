@@ -2,6 +2,7 @@
 
 #include "CGame.h"
 #include "CCombatText.h"
+#include <CCharacter.h>
 #include "Utility.h"
 #include "CRNG.h"
 
@@ -53,6 +54,7 @@ void CCombatTextSystem::createCombatText( const sf::Vector2f& pos, int number, C
     else if( type == CombatTextType::COMBATTEXT_DMGCRIT ) {
         textWrapper.setCharSize( 16 );
         textWrapper.setColor( sf::Color::Red );
+        textWrapper.setStyle( sf::Text::Bold );
     }
 
     textWrapper.setOrigin( OriginPosition::ORIGIN_CENTER );
@@ -63,4 +65,16 @@ void CCombatTextSystem::createCombatText( const sf::Vector2f& pos, int number, C
     combatText->setFadeVelocity( 550 );
 
     m_combatTexts.push_back( combatText );
+}
+
+void CCombatTextSystem::createCombatText( const CCharacter* character, int number, DamageType dmgType ) {
+    CombatTextType textType;
+
+    switch( dmgType ) {
+    case DamageType::DMG_NORMAL:    textType = CombatTextType::COMBATTEXT_DMGNORMAL; break;
+    case DamageType::DMG_CRIT:      textType = CombatTextType::COMBATTEXT_DMGCRIT; break;
+    default:                        textType = CombatTextType::COMBATTEXT_DMGNORMAL; break;
+    }
+
+    createCombatText( sf::Vector2f( character->getCenter().x, character->getPos().y ), number, textType );
 }

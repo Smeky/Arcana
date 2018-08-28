@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:3ac475f4240842f98fe76c47b5ee81e4:085d052dc69433d71b23d073d8b77a09:296697a0f5a891ca4f01bd4bf389a704$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="base.png" width="406" height="52">
+    <sprite n="tower_beam.png" x="1" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="tower_bomber.png" x="53" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="tower_plasma_machine.png" x="105" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="tower_plasma_sniper.png" x="157" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="tower_slower.png" x="209" y="1" w="40" h="40" pX="0.5" pY="0.5"/>
+    <sprite n="turret_artillery.png" x="251" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="turret_mortar.png" x="303" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="turret_mortar_heavy.png" x="355" y="1" w="50" h="50" pX="0.5" pY="0.5"/>
+</TextureAtlas>

@@ -3,6 +3,7 @@
 #include "iostream"
 using namespace std;
 
+
 void CCombatText::update( const sf::Time& delta ) {
     // Update life timer
     m_lifeTimer.update( delta );

@@ -8,33 +8,71 @@ local myAssets		= Assets
 local myEntity		= EntitySystem
 
 function initPausescreen() 
-	local window_W	= 300
-	local window_H	= 400
+	local window_W	= 250
+	local window_H	= 350
 	
 	Window_Pause = myGui:newElement( { 
 		pos			= { ( GameWindow_W - window_W ) / 2, ( GameWindow_H - window_H ) / 2 };
 		size		= { window_W, window_H };
-		textures 	= { "GUI_WINDOW_PAUSESCREEN" };
+		textures 	= {
+			{ 
+				texture	= "GUI_BG_PAUSESCREEN";
+				size	= { GameWindow_W, GameWindow_H };
+				pos		= { - ( GameWindow_W - window_W ) / 2, - ( GameWindow_H - window_H ) / 2 };
+			};
+			{ 
+				texture	= "GUI_BG_PAUSESCREEN";
+				size	= { window_W, GameWindow_H };
+				pos		= { 0, - ( GameWindow_H - window_H ) / 2 };
+			};
+			"GUI_WINDOW_PAUSESCREEN";
+		};
+		
 		shown		= false;
 		
 		childs		= {
 			{
 				type		= "button";
-				size		= { 150, 30 };
-				relPos		= { ( window_W - 150 ) / 2, 50 };
+				size		= { 150, 25 };
+				relPos		= { ( window_W - 150 ) / 2, 80 };
+				buttonTex	= "GUI_BUTTON_PAUSEMENU_RETURN";
+				
+				functions	= {
+					onClick	= function( b ) pauseGame() end;
+				};
+			};
+			{
+				type		= "button";
+				size		= { 150, 25 };
+				relPos		= { ( window_W - 150 ) / 2, 110 };
 				buttonTex	= "GUI_BUTTON_PAUSEMENU_MENU";
 				msg			= "GuiButtonPauseMenu";
 			};
 			{
 				type		= "button";
-				size		= { 150, 30 };
-				relPos		= { ( window_W - 150 ) / 2, window_H - 70 };
+				size		= { 150, 25 };
+				relPos		= { ( window_W - 150 ) / 2, 140 };
+				buttonTex	= "GUI_BUTTON_MAINMENU_OPTIONS";
+				
+				functions	= {
+					onClick	= function( b ) openSettings() end;
+				};
+			};
+			{
+				type		= "button";
+				size		= { 150, 25 };
+				relPos		= { ( window_W - 150 ) / 2, window_H - 80 };
 				buttonTex	= "GUI_BUTTON_MAINMENU_EXIT";
-				msg			= "GuiButtonMenuExit";
 				hotkeys 	= { 4 };
+				
+				functions	= {
+					onClick	= function( b ) myCore:closeGame() end;
+				};
 			};
 		};
 	} )
+	
+	initOptions()
 end
 
 function initMapWindow()
@@ -57,7 +95,7 @@ function initMapWindow()
 				relPos		= { window_W - 38, 3 };
 				
 				buttonTex	= "GUI_BUTTON_WINDOW_EXIT";
-				
+			
 				functions	= {
 					onClick		= function( b ) closeWindow( Window_Map ) end;
 				};
@@ -259,15 +297,16 @@ function initPlayer()
 	elseif charSelectionIndex == 6 then playerData = getCharacter( "PLAYER_NECROMANCER" );
 	end
 
-	playerData.pos = { 1000, 950 }
+	playerData.pos = { 1300, 750 }
 	
 	playerID = myWorld:createPlayer( playerData )
 	
-	local playerLUD = myEntity:getLightUserData( playerID )
+	playerLUD = myEntity:getLightUserData( playerID )
 	
-	myEntity:addAbility( playerLUD, getAbility( "DEV_BLINK" ) );
+	myEntity:addAbility( playerLUD, getAbility( "BLINK" ) );
 	myEntity:addAbility( playerLUD, getAbility( "FIREBALL" ) );
 	myEntity:addAbility( playerLUD, getAbility( "POISON_BOMB" ) );
+	-- myEntity:addAbility( playerLUD, getAbility( "ROSTSHIELD" ) );
 	
 	abilitybarSetPlayer( playerID )
 end
@@ -280,7 +319,6 @@ function initPlayscene()
 	resetAbilitybar()
 	
 	initPlayer()
-	initPausescreen()
 	initAbilitybar()
 	initCastbar()
 	initInventory()
@@ -288,6 +326,7 @@ function initPlayscene()
 	initMapWindow()
 	setupUpgrades()
 	initUpgradeWindow()
+	initPausescreen()
 	
 	local temp = getLootTable( "Equipment" )
 	
@@ -295,7 +334,8 @@ function initPlayscene()
 	-- createLevel( "ZONE_1_LEVEL_1" )
 	
 	myWorld:setCameraSize( cameraSize )
-	
+	myWorld:setCameraCenter( myEntity:getCenter( playerLUD ) )
+	--[[
 	myInventory:addItem( getItem( "ITEM_AMULET_AENOANET" ) )
 	myInventory:addItem( getItem( "ITEM_HELM_IRON" ) )
 	myInventory:addItem( getItem( "ITEM_CHEST_IRON" ) )
@@ -309,6 +349,7 @@ function initPlayscene()
 	myInventory:addItem( getItem( "ITEM_SHOES_LEATHER" ) )
 	myInventory:addItem( getItem( "ITEM_SWORD_DODYBRIO" ) )
 	myInventory:addRunestones( 2000 )
+	]]
 end
 
 local windowManager = {}
@@ -385,9 +426,13 @@ function worldUpdate()
 		end
 	end
 	
+	if myInput:isKeyPressed( 29 ) then
+		myWorld:playerCastAbility( 2, { getRelativeMousePos() } )
+	end
+	
 	local player_X, player_Y = myWorld:getPlayerCenter()
 	
-	myWorld:moveCameraCenterTo( { player_X, player_Y }, 15 )
+	myWorld:moveCameraCenterTo( { player_X, player_Y }, 10 )
 end
 
 function spawnProjectile( SpecificData )

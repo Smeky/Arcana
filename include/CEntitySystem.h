@@ -21,6 +21,7 @@ enum class DamageType : int {
 
 struct lua_State;
 struct CharacterStats;
+struct ProjectileStats;
 class CDimensional;
 class CPlayer;
 class CEntity;
@@ -52,15 +53,20 @@ public:
 
     /** Spatial system */
     C_Dimensionals  getNearbySolid      ( const CDimensional* dim );
+    bool            checkSphereForColl  ( const sf::Vector2f& pos, float radius );
+    bool            isPosFree           ( const sf::Vector2f& pos, const sf::Vector2f& size );
 
     /** Damage dealing */
     // Old, ID based
     void            attackTarget        ( size_t sourceID, size_t targetID, int damage, DamageType type = DamageType::DMG_NORMAL );
     // New
     void            attackTarget        ( CCharacter* target, CCharacter* source = nullptr, int damage = 0, DamageType type = DamageType::DMG_NORMAL );
+    void            attackTarget        ( size_t sourceID, size_t targetID, const ProjectileStats& stats );
 
     void            playerInteract      ();
     void            interactWithObject  ( size_t ID );
+
+    static int      calculateDamage     ( int min, int max, float critChance, float critMultip, DamageType& type );
 
     /** Entity type */
     bool            isCharacter         ( size_t ID );
@@ -99,6 +105,10 @@ public:
     sf::Vector2f    getEntityPos        ( size_t ID );
     sf::Vector2f    getEntityCenter     ( size_t ID );
     sf::Vector2f    getEntitySize       ( size_t ID );
+
+    void            setEntityPosRandom  ( CEntity* entity );
+
+    CEntity*        getEntityByID       ( size_t ID );
 
     /** Loading entities from lua tables */
     size_t          playerFromLuaTable  ( lua_State* state, int index );
@@ -139,6 +149,7 @@ public:
     static int      luaSetCenter        ( lua_State* state );
     static int      luaSetSize          ( lua_State* state );
     static int      luaSetPosSize       ( lua_State* state );
+    static int      luaSetPosRandom     ( lua_State* state );
 
     /** Dimension get */
     static int      luaGetPos           ( lua_State* state );
@@ -153,6 +164,7 @@ public:
     /** Characters */
     static int      luaGetHealth        ( lua_State* state );
     static int      luaGetResource      ( lua_State* state );
+    static int      luaGetExperience    ( lua_State* state );
     static int      luaAddAbility       ( lua_State* state );
     static int      luaSetAbility       ( lua_State* state );
     static int      luaGetAbility       ( lua_State* state );
@@ -173,6 +185,9 @@ public:
     static int      luaAddColor         ( lua_State* state );
     static int      luaDelColor         ( lua_State* state );
 
+    /** Particles       - Needs a good way of removing effects ( id based might be complicated ) */
+//    static int      luaAddParticles     ( lua_State* state );
+//    static int      luaDelParticles     ( lua_State* state );
 
     /** New Lua functions end */
 
@@ -236,6 +251,10 @@ private:
     void            loadBaseEntityData  ( lua_State* state, int index, CEntity* entity );
     void            loadCharacterData   ( lua_State* state, int index, CCharacter* character );
     void            loadProjectileData  ( lua_State* state, int index, CProjectile* projectile );
+
+    /** Combat */
+    void            handleAttack        ( size_t targetID, size_t sourceID, int damage, DamageType type );
+    void            handleAttack        ( size_t targetID, int damage, DamageType, int sourceType );
 
     /** Debug */
     void            displayEntityBox    ( sf::RenderTarget& window, sf::RenderStates states );

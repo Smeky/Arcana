@@ -16,12 +16,20 @@ void CAssetManager::loadFont( const std::string& filepath, const std::string& ID
     assert( m_fonts.loadFromFile( filepath, ID ) );
 }
 
+void CAssetManager::loadSound( const std::string& filepath, const std::string& ID ) {
+    assert( m_sounds.loadFromFile( filepath, ID ) );
+}
+
 sf::Texture& CAssetManager::getTexture( const std::string& ID ) {
     return m_textures.getAsset( ID );
 }
 
 sf::Font& CAssetManager::getFont( const std::string& ID ) {
     return m_fonts.getAsset( ID );
+}
+
+sf::SoundBuffer& CAssetManager::getSound( const std::string& ID ) {
+    return m_sounds.getAsset( ID );
 }
 
 sf::Vector2u CAssetManager::getTextureSize( const std::string& ID ) {
@@ -81,6 +89,35 @@ int CAssetManager::luaLoadFont( lua_State* state ) {
         filepath.append( filename );
 
         CGame::AssetManager.loadFont( filepath, ID );
+    }
+
+    lua_pop( state, argc );
+
+    return 0;
+}
+
+int CAssetManager::luaLoadSound( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    std::string folderpath = lua_tostring( state, lua_gettop( state ) - 1 );
+
+    for( lua_pushnil( state ); lua_next( state, - 2 ) != 0; lua_pop( state, 1 ) ) {
+        lua_getfield( state, - 1, "ID" );
+
+        std::string ID          = lua_tostring( state, lua_gettop( state ) );
+
+        lua_pop( state, 1 );
+
+        lua_getfield( state, - 1, "File" );
+
+        std::string filename    = lua_tostring( state, lua_gettop( state ) );
+
+        lua_pop( state, 1 );
+
+        std::string filepath = folderpath;
+        filepath.append( filename );
+
+        CGame::AssetManager.loadSound( filepath, ID );
     }
 
     lua_pop( state, argc );

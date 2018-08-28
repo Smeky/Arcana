@@ -3,9 +3,10 @@
 #include <lua.hpp>
 
 #include <CGuiButton.h>
+#include <CGuiCheckbox.h>
+#include <CGuiSlider.h>
 #include <Utility.h>
 #include <LuaWrapper.h>
-
 
 #include <iostream>
 using namespace std;
@@ -211,7 +212,7 @@ void CGuiElement::setRelativePos( const sf::Vector2f& pos ) {
     sf::Vector2f newPos = pos;
 
     if( m_parent != nullptr ) {
-        newPos += m_parent->getRelativePos();
+        newPos += m_parent->getAbsolutePos();
     }
 
     setPos( newPos );
@@ -221,10 +222,20 @@ sf::Vector2f CGuiElement::getRelativePos() const {
     sf::Vector2f relPos = m_pos;
 
     if( m_parent != nullptr ) {
-        relPos -= m_parent->getRelativePos();
+        relPos -= m_parent->getAbsolutePos();
     }
 
     return relPos;
+}
+
+sf::Vector2f CGuiElement::getAbsolutePos() const {
+    sf::Vector2f absPos = getRelativePos();
+
+    if( m_parent != nullptr ) {
+        absPos += m_parent->getAbsolutePos();
+    }
+
+    return absPos;
 }
 
 void CGuiElement::addElement( CGuiElement* element ) {
@@ -265,6 +276,18 @@ bool CGuiElement::reverseShown() {
 CGuiElement* CGuiElement::setupFromTable( lua_State* state, int index, bool* result, const CGuiElement* parent ) {
     CGuiElement* element = new CGuiElement();
 
+    bool success = loadFromTable( state, index, element, parent );
+
+    if( result != nullptr ) {
+        *result = success;
+    }
+
+    return element;
+}
+
+bool CGuiElement::loadFromTable( lua_State* state, int index, CGuiElement* element, const CGuiElement* parent ) {
+    if( element == nullptr ) return false;
+
     if( parent != nullptr ) {
         element->setParent( parent );
     }
@@ -272,9 +295,7 @@ CGuiElement* CGuiElement::setupFromTable( lua_State* state, int index, bool* res
     if( !lua_istable( state, index ) ) {
         cout << "Error: Unable to initialize gui element out of given value: " << lua_typename( state, lua_type( state, index ) ) << endl;
 
-        if( result != nullptr ) {
-            *result = false;
-        }
+        return false;
     }
     else {
         lua_getfield( state, index, "pos" );
@@ -291,7 +312,6 @@ CGuiElement* CGuiElement::setupFromTable( lua_State* state, int index, bool* res
         }
 
         element->setSize( Util::vectorFromTable<float>   ( state, index, "size" ) );
-
 
         lua_getfield( state, index, "center" );
         if( lua_istable( state, - 1 ) ) {
@@ -368,13 +388,31 @@ CGuiElement* CGuiElement::setupFromTable( lua_State* state, int index, bool* res
                         element->addElement( temp );
                     }
                 }
+                else if( type == "checkbox" ) {
+                    CGuiCheckbox* temp = nullptr;
+
+                    temp = CGuiCheckbox::setupFromTable( state, lua_gettop( state ), nullptr, element );
+
+                    if( temp != nullptr ) {
+                        element->addElement( temp );
+                    }
+                }
+                else if( type == "slider" ) {
+                    CGuiSlider* temp = nullptr;
+
+                    temp = CGuiSlider::setupFromTable( state, lua_gettop( state ), nullptr, element );
+
+                    if( temp != nullptr ) {
+                        element->addElement( temp );
+                    }
+                }
             }
         }
 
         lua_pop( state, 6 );
     }
 
-    return element;
+    return true;
 }
 
 std::string CGuiElement::guiTypeToString( const GuiType& type ) {
@@ -383,6 +421,7 @@ std::string CGuiElement::guiTypeToString( const GuiType& type ) {
     switch( type ) {
     case GuiType::GUI_DEFAULT:  result = "Default";     break;
     case GuiType::GUI_BUTTON:   result = "Button";      break;
+    case GuiType::GUI_CHECKBOX: result = "Checkbox";    break;
     default: result = "Unkown"; break;
     }
 

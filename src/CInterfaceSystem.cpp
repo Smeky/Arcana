@@ -18,6 +18,9 @@
 #include "Utility.h"
 #include <CGuiElement.h>
 #include <CGuiButton.h>
+#include <CGuiCheckbox.h>
+#include <CGuiSlider.h>
+#include <CGuiDropbox.h>
 
 #include "iostream"
 using namespace std;
@@ -315,7 +318,7 @@ CButtonAbility* CInterfaceSystem::createAbilityFromTable( lua_State* state, int 
 
     sf::Vector2f    pos;
     sf::Vector2f    size;
-    size_t          abilityIndex;
+    size_t          abilityIndex    = 0;
     std::string     textureID;
     std::string     textureBgID;
     std::string     textureFrontID;
@@ -874,7 +877,7 @@ int CInterfaceSystem::luaCreateInventory( lua_State* state ) {
 
     lua_pop( state, argc + 5 );
 
-    inventory->addWidget( new CDisplayPlayerStat() );
+//    inventory->addWidget( new CDisplayPlayerStat() );
 
     size_t ID = CGame::InterfaceSystem.registerWindow( inventory );
 
@@ -1058,6 +1061,185 @@ int CInterfaceSystem::luaNewButton( lua_State* state ) {
 
     return 1;
 }
+
+int CInterfaceSystem::luaNewCheckbox( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    CGuiElement*    parent      = nullptr;
+
+    // Used if element should be made out of table
+    bool            fromTable   = false;
+    CGuiCheckbox*   temp        = nullptr;
+
+    // In case there is light user data of parent element or table
+    if( argc == 2 ) {
+        // In case parent was given as argument
+        if( lua_islightuserdata( state, argc ) ) {
+            parent  = (CGuiElement*)lua_touserdata( state, argc );
+        }
+        // In case table was given as argument
+        else if( lua_istable( state, argc ) ) {
+            fromTable   = true;
+
+            temp = CGuiCheckbox::setupFromTable( state, argc, nullptr, parent );
+        }
+    }
+    // In case there are both parent and table
+    else if( argc == 3 ) {
+        if( lua_islightuserdata( state, argc - 1 ) ) {
+            parent  = (CGuiElement*)lua_touserdata( state, argc - 1 );
+        }
+        if( lua_istable( state, argc ) ) {
+            fromTable   = true;
+
+            temp = CGuiCheckbox::setupFromTable( state, argc, nullptr, parent );
+        }
+    }
+
+    lua_pop( state, argc );
+
+    CGuiCheckbox* checkbox = nullptr;
+
+    // If element should be made out of table
+    if( fromTable ) {
+        checkbox = temp;
+    }
+    else {
+        checkbox = new CGuiCheckbox();
+    }
+
+    // If element is child add it to parent, otherwise register it in interface system
+    if( parent == nullptr ) {
+        CGame::InterfaceSystem.registerElement( checkbox );
+    }
+    else {
+        parent->addElement( checkbox );
+    }
+
+    lua_pushlightuserdata( state, checkbox );
+
+    return 1;
+}
+
+int CInterfaceSystem::luaNewSlider( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    CGuiElement*    parent      = nullptr;
+
+    // Used if element should be made out of table
+    bool            fromTable   = false;
+    CGuiSlider*     temp        = nullptr;
+
+    // In case there is light user data of parent element or table
+    if( argc == 2 ) {
+        // In case parent was given as argument
+        if( lua_islightuserdata( state, argc ) ) {
+            parent  = (CGuiElement*)lua_touserdata( state, argc );
+        }
+        // In case table was given as argument
+        else if( lua_istable( state, argc ) ) {
+            fromTable   = true;
+
+            temp = CGuiSlider::setupFromTable( state, argc, nullptr, parent );
+        }
+    }
+    // In case there are both parent and table
+    else if( argc == 3 ) {
+        if( lua_islightuserdata( state, argc - 1 ) ) {
+            parent  = (CGuiElement*)lua_touserdata( state, argc - 1 );
+        }
+        if( lua_istable( state, argc ) ) {
+            fromTable   = true;
+
+            temp = CGuiSlider::setupFromTable( state, argc, nullptr, parent );
+        }
+    }
+
+    lua_pop( state, argc );
+
+    CGuiSlider* slider = nullptr;
+
+    // If element should be made out of table
+    if( fromTable ) {
+        slider = temp;
+    }
+    else {
+        slider = new CGuiSlider();
+    }
+
+    // If element is child add it to parent, otherwise register it in interface system
+    if( parent == nullptr ) {
+        CGame::InterfaceSystem.registerElement( slider );
+    }
+    else {
+        parent->addElement( slider );
+    }
+
+    lua_pushlightuserdata( state, slider );
+
+    return 1;
+}
+
+int CInterfaceSystem::luaNewDropbox( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    CGuiElement*    parent      = nullptr;
+
+    // Used if element should be made out of table
+    bool            fromTable   = false;
+    CGuiDropbox*    temp        = nullptr;
+
+    // In case there is light user data of parent element or table
+    if( argc == 2 ) {
+        // In case parent was given as argument
+        if( lua_islightuserdata( state, argc ) ) {
+            parent  = (CGuiElement*)lua_touserdata( state, argc );
+        }
+        // In case table was given as argument
+        else if( lua_istable( state, argc ) ) {
+            fromTable   = true;
+
+            temp = CGuiDropbox::setupFromTable( state, argc, nullptr, parent );
+        }
+    }
+    // In case there are both parent and table
+    else if( argc == 3 ) {
+        if( lua_islightuserdata( state, argc - 1 ) ) {
+            parent  = (CGuiElement*)lua_touserdata( state, argc - 1 );
+        }
+        if( lua_istable( state, argc ) ) {
+            fromTable   = true;
+
+            temp = CGuiDropbox::setupFromTable( state, argc, nullptr, parent );
+        }
+    }
+
+    lua_pop( state, argc );
+
+    CGuiDropbox* dropbox = nullptr;
+
+    // If element should be made out of table
+    if( fromTable ) {
+        dropbox = temp;
+    }
+    else {
+        dropbox = new CGuiDropbox();
+    }
+
+    // If element is child add it to parent, otherwise register it in interface system
+    if( parent == nullptr ) {
+        CGame::InterfaceSystem.registerElement( dropbox );
+    }
+    else {
+        parent->addElement( dropbox );
+    }
+
+    lua_pushlightuserdata( state, dropbox );
+
+    return 1;
+}
+
+
 
 int CInterfaceSystem::luaDeleteSprite( lua_State* state ) {
     int argc = lua_gettop( state );

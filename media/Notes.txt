@@ -135,7 +135,9 @@
 									
 									
 									
-									
+								OK	Audio
+									Better map generation
+									Automatic updates
 									Pathfining
 									Multiple tile types ( currently only 2 are possible )
 									Options
@@ -143,7 +145,140 @@
 									AI using abilities
 									AoE effects on the ground
 																		
-																		
+																
+
+
+																
+	
+									Combat system
+										-> Thing about if it should be based on IDs or LUD
+									
+									PROJECTILES
+										-> lightweight as much as possible
+										-> Behavior types
+											- Rotation, movement, etc.
+											- Homing mossiles
+	
+									Performance improvements:
+										-> Better entity destroying ( swap, pop_back instead of erase )
+										-> Better Lua support for text / spirite wrappers
+										
+																
+
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+									what should be done before Pre-alpha:
+									
+										DONE 1/2 - Map generation
+										DONE 1/2 - ?? Pathfiniding
+										- ?? Better Ai
+										- ?? Projectiles
+										- ?? Better Combat system
+										- Options ( at least video )
+										- Finished GUI ( at least options )
+										- ?? Inventory ( new element system )
+										- ?? Better looking tooltips
+										DONE - Finish damage calculation
+										- Content:
+											-> Abilities		( class based )
+											-> Items
+											-> Upgrades
+										- ?? Talent tree
+										DONE - Finish level events ( OK level start, OK wave timing, boss, portal to next level )
+											-> Some message about level start, etc.
+											-> Will be replaced by animations
+											
+											
+										[ ?? -> If there will be some time left ]
+																
+																
+																
+															
+								New map gen notes:
+								
+									- ?? Possibility of size treshold for all layers ??        
+									- Support for flexible amount of layers in texturing
+																
+									Doc:
+										- Map size is used for all layers
+										- If more then 1 layer, base layer is always the first one
+																
+																
+									map							
+										size
+										emptyTreshold
+										solidTreshold
+										passageRad
+										layers
+											layer
+												empty			( bool )
+												spawnChance
+												smoothing
+												
+										tileset
+										
+										
+												
+										
+									Lua table:
+
+										map = {
+											size		= {}
+											emptyTresh	= 
+											solidTresh	= 
+											passageRad	= 
+											tileset		= 
+											
+											layers		= {
+												{
+												
+												};
+											}
+										}
+																
+																
+																
+																
+																
+																
+																
+																
+
+
+								Gui Element :: setup from table improvements
+								
+									
+									- ?? Private static function inside GuiElement that accepts GuiElement* as argument
+										-> Loads everything in to it, then GuiButton ( or everything else ) loads the rest
+									
+									Element
+										Button
+										New stuff ..
+										
+										
+									= All need basic element things ( pos, texutre, etc .. )
+
+
+
+
+
+
+
+
+
+
+
+
+
+														
 																		
 																		
 																		
@@ -499,9 +634,29 @@
 																		
 																		
 																		
+											Audio system: Volume
+											
+												Goal:
+													- Master volume
+														-> Music
+														-> Effects
+														-> Ambient
+														-> Voice
+														-> GUI
+													
 																		
-																		
-																		
+											
+											Audio manager
+											
+												Goal: 
+													
+													- Scene based music
+														-> Needs to know what scene is there
+														
+													- Ambient
+														-> Level ID
+														-> IDs loaded from level file
+													
 																		
 																		
 																		

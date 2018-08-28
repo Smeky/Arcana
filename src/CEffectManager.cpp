@@ -21,7 +21,7 @@ void CEffectManager::createFromLuaTable( lua_State* state, int index, CCharacter
 
     lWrapper::stringFromLuaTable                ( state, index, "ID",           data.ID );
     lWrapper::stringFromLuaTable                ( state, index, "texture",      data.textureID );
-    lWrapper::valueFromLuaTable<float>          ( state, index, "livetime",     data.liveTime );
+    lWrapper::valueFromLuaTable<float>          ( state, index, "duration",     data.liveTime );
     lWrapper::valueFromLuaTable<float>          ( state, index, "ticktime",     data.tickTime );
     lWrapper::valueFromLuaTable<EffectType>     ( state, index, "type",         data.type );
     lWrapper::valueFromLuaTable<EffectSubType>  ( state, index, "subtype",      data.subType );
@@ -30,6 +30,7 @@ void CEffectManager::createFromLuaTable( lua_State* state, int index, CCharacter
     if( lua_istable( state, - 1 ) ) {
         data.color  = Util::colorFromLuaTable( state, lua_gettop( state ) );
     }
+    lua_pop( state, 1 );
 
     if( data.subType == EffectSubType::EFFECT_DEFAULT ) {
         CEffect* effect = new CEffect();
@@ -39,6 +40,8 @@ void CEffectManager::createFromLuaTable( lua_State* state, int index, CCharacter
         if( lua_istable( state, - 1 ) ) {
             loadLuaFunctions( state, lua_gettop( state ), effect );
         }
+
+        lua_pop( state, 1 );
 
         parent->addEffect( effect );
     }
@@ -66,6 +69,8 @@ void CEffectManager::createFromLuaTable( lua_State* state, int index, CCharacter
             loadLuaFunctions( state, lua_gettop( state ), effect );
         }
 
+        lua_pop( state, 1 );
+
         parent->addEffectStat( effect );
     }
     else if( data.subType == EffectSubType::EFFECT_EVENT ) {
@@ -81,12 +86,10 @@ void CEffectManager::createFromLuaTable( lua_State* state, int index, CCharacter
             loadLuaFunctions( state, lua_gettop( state ), effect );
         }
 
+        lua_pop( state, 1 );
+
         parent->addEffectEvent( effect, type );
     }
-
-    lua_pop( state, 1 );
-
-
 }
 
 void CEffectManager::callLuaFunction( size_t functionID, CCharacter* parent, const std::vector<float>& arguments ) {
@@ -152,20 +155,27 @@ size_t CEffectManager::getNewID() {
 void CEffectManager::loadLuaFunctions( lua_State* state, int index, CEffect* effect ) {
     lua_getfield( state, index, "onAplication" );
     if( lua_isfunction( state, - 1 ) ) {
-        effect->setFunctionID( CEffect::EFUNC_APLICATION, registerFunction( state ) );
+        effect->setFunctionID( CEffect::EFUNC_APLICATION, CGame::ScriptSystem.registerFunc() );
+    }
+    else {
+        lua_pop( state, 1 );
     }
 
     lua_getfield( state, index, "onAction" );
     if( lua_isfunction( state, - 1 ) ) {
-        effect->setFunctionID( CEffect::EFUNC_ACTION, registerFunction( state ) );
+        effect->setFunctionID( CEffect::EFUNC_ACTION, CGame::ScriptSystem.registerFunc() );
+    }
+    else {
+        lua_pop( state, 1 );
     }
 
     lua_getfield( state, index, "onRemove" );
     if( lua_isfunction( state, - 1 ) ) {
-        effect->setFunctionID( CEffect::EFUNC_REMOVE, registerFunction( state ) );
+        effect->setFunctionID( CEffect::EFUNC_REMOVE, CGame::ScriptSystem.registerFunc() );
     }
-
-    lua_pop( state, 3 );
+    else {
+        lua_pop( state, 1 );
+    }
 }
 
 size_t CEffectManager::registerFunction( lua_State* state ) {

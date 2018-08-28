@@ -150,9 +150,7 @@ void CProjectile::doMove() {
 bool CProjectile::hitTarget( size_t targetID ) {
 //    if( CGame::EntitySystem.isCharacter( targetID ) ) {
         if( !CGame::EntitySystem.compareFaction( m_stats.faction, targetID ) ) {
-            if( m_stats.dmgMin != 0 ) {
-                CGame::EntitySystem.attackTarget( m_ID, targetID, m_stats.dmgMin, DamageType::DMG_NORMAL );
-            }
+            CGame::EntitySystem.attackTarget( m_ID, targetID, m_stats );
 
             // In case character has different faction
             return true;

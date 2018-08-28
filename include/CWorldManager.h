@@ -40,6 +40,7 @@ public:
     sf::Vector2f    getMapSize              () const;
     CMap*           getCurrentlyUsedMap     () const;
 
+    sf::Time        getWorldTime            () const;
     void            pauseGame               ();
     bool            isPaused                () const;
 
@@ -50,6 +51,8 @@ public:
     static int      luaCreateMap            ( lua_State* state );
     static int      luaEnterMap             ( lua_State* state );
 
+    static int      luaSetCameraPos         ( lua_State* state );
+    static int      luaSetCameraCenter      ( lua_State* state );
     static int      luaSetCameraSize        ( lua_State* state );
     static int      luaGetCameraPos         ( lua_State* state );
 
@@ -57,15 +60,19 @@ public:
     static int      luaCameraMoveCenterTo   ( lua_State* state );
     static int      luaCameraGetOffset      ( lua_State* state );
 
+    static int      luaGetWorldTime         ( lua_State* state );
     static int      luaPauseGame            ( lua_State* state );
     static int      luaIsGamePaused         ( lua_State* state );
 
     static int      luaDisplaySpatialSystem ( lua_State* state );
+    static int      luaDisplayMapGrid       ( lua_State* state );
 
 private:
     size_t          getNewMapID             ();
 
 private:
+    sf::Time        m_worldTime;
+
     size_t          m_mapIDCounter;
     Maps            m_maps;
 

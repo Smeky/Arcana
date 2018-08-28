@@ -39,7 +39,13 @@ bool CProgressiveStat::canRemove( int amount ) const {
 
 void CProgressiveStat::setMaximum( int maximum ) {
     m_maximum   = maximum;
-    m_current   = maximum;
+}
+
+void CProgressiveStat::setMaximumFactor( int maximum ) {
+    float factor = (float)m_current / m_maximum;
+
+    m_maximum   = maximum;
+    m_current   = maximum * factor;
 }
 
 void CProgressiveStat::setCurrent( int current ) {

@@ -16,6 +16,7 @@ CGuiButton::CGuiButton()
 , m_clicked         ( false )
 , m_rPressed        ( false )
 , m_rClicked        ( false )
+, m_selected        ( false )
 , m_wasPressed      ( false )
 {
     m_type  = GuiType::GUI_BUTTON;
@@ -64,8 +65,12 @@ void CGuiButton::handleInput( sf::Event event ) {
         if( getBox().contains( event.mouseMove.x, event.mouseMove.y ) ) {
             m_mouseover = true;
 
+//            m_selected = false;
+
             if( !wasMouseover ) {
                 CGame::InterfaceSystem.callLuaFunction( m_luaFuncs[ LuaFunction::FUNC_ONMOUSEENTER ], this );
+
+                playSound( CGuiButton::ONMOUSEOVER );
             }
         }
         else {
@@ -92,6 +97,13 @@ void CGuiButton::handleInput( sf::Event event ) {
             m_rPressed = false;
         }
     }
+    else if( event.type == sf::Event::KeyReleased ) {
+        if( m_selected ) {
+            if( event.key.code == 58 ) {        // Enter
+                m_clicked = true;
+            }
+        }
+    }
 }
 
 void CGuiButton::update( const sf::Time& delta ) {
@@ -112,11 +124,12 @@ void CGuiButton::update( const sf::Time& delta ) {
         CGame::InterfaceSystem.callLuaFunction( m_luaFuncs[ LuaFunction::FUNC_ONCLICK ], this );
 
         if( !m_msg.empty() ) {
-
             CGame::MessageSystem.broadcast( new CMessage( m_msg ) );
         }
 
         resetPressOffset();
+
+        playSound( CGuiButton::ONCLICK );
 
         m_clicked = false;
     }
@@ -138,7 +151,10 @@ void CGuiButton::update( const sf::Time& delta ) {
 
         if( sprite != nullptr ) {
             // Update texture clip rectangle based on button state
-            if( m_locked ) {
+            if( m_selected ) {
+                sprite->setClip( sf::IntRect( m_buttonClipSize.x * 4, 0, m_buttonClipSize.x, m_buttonClipSize.y ) );
+            }
+            else if( m_locked ) {
                 sprite->setClip( sf::IntRect( m_buttonClipSize.x * 3, 0, m_buttonClipSize.x, m_buttonClipSize.y ) );
             }
             else if( m_pressed ) {
@@ -223,7 +239,7 @@ size_t CGuiButton::addButtonTexture( lua_State* state, int index, bool* result )
 
     if( success ) {
         m_buttonClipSize    = sprite.getTexture()->getSize();
-        m_buttonClipSize.x  = m_buttonClipSize.x / 4;
+        m_buttonClipSize.x  = m_buttonClipSize.x / 5;
 
         sprite.setClip( sf::IntRect( 0, 0, m_buttonClipSize.x, m_buttonClipSize.y ) );
 
@@ -247,7 +263,7 @@ bool CGuiButton::setButtonTexture( size_t ID ) {
             m_spriteButtonID = ID;
 
             m_buttonClipSize    = it.getTexture()->getSize();
-            m_buttonClipSize.x  = m_buttonClipSize.x / 4;
+            m_buttonClipSize.x  = m_buttonClipSize.x / 5;
 
             return true;
         }
@@ -260,12 +276,24 @@ void CGuiButton::setPressOffset( const sf::Vector2f& offset ) {
     m_pressOffset   = offset;
 }
 
+void CGuiButton::setSound( ButtonSoundType type, const std::string& ID ) {
+    m_sounds[ type ]    = ID;
+}
+
 void CGuiButton::setLocked( bool locked ) {
     m_locked    = locked;
 }
 
 bool CGuiButton::isLocked() const {
     return m_locked;
+}
+
+void CGuiButton::setSelected( bool selected ) {
+    m_selected  = selected;
+}
+
+bool CGuiButton::isSelected() const {
+    return m_selected;
 }
 
 bool CGuiButton::isMouseover() const {
@@ -293,112 +321,9 @@ bool CGuiButton::isRClicked() const {
 CGuiButton* CGuiButton::setupFromTable( lua_State* state, int index, bool* result, const CGuiElement* parent ) {
     CGuiButton* button = new CGuiButton();
 
-    if( parent != nullptr ) {
-        button->setParent( parent );
-    }
+    bool success = CGuiElement::loadFromTable( state, index, button, parent );
 
-    if( !lua_istable( state, index ) ) {
-        cout << "Error: Unable to initialize gui element out of given value: " << lua_typename( state, lua_type( state, index ) ) << endl;
-
-        if( result != nullptr ) {
-            *result = false;
-        }
-    }
-    else {
-        lua_getfield( state, index, "pos" );
-        if( lua_istable( state, - 1 ) ) {
-            button->setPos( Util::vectorFromTable<float>( state, lua_gettop( state ) ) );
-        }
-        else {
-            lua_getfield( state, index, "relPos" );
-            if( lua_istable( state, - 1 ) ) {
-                button->setRelativePos( Util::vectorFromTable<float>( state, lua_gettop( state ) ) );
-            }
-
-            lua_pop( state, 1 );
-        }
-
-        button->setSize( Util::vectorFromTable<float>   ( state, index, "size" ) );
-
-        lua_getfield( state, index, "center" );
-        if( lua_istable( state, - 1 ) ) {
-            button->setCenter( Util::vectorFromTable<float>( state, lua_gettop( state ) ) );
-        }
-
-        lua_getfield( state, index, "posSize" );
-        if( lua_istable( state, - 1 ) ) {
-            button->setPosSize( Util::vectorFromTable<float>( state, lua_gettop( state ) ) );
-        }
-
-        bool active     = true;
-        bool shown      = true;
-
-        lWrapper::valueFromLuaTable<bool>( state, index, "active",  active );
-        lWrapper::valueFromLuaTable<bool>( state, index, "shown",   shown );
-
-        button->setActive( active );
-        button->setShown( shown );
-
-        lua_getfield( state, index, "textures" );
-        if( lua_istable( state, - 1 ) ) {
-            for( lua_pushnil( state ); lua_next( state, - 2 ) != 0; lua_pop( state, 1 ) ) {
-                button->addTexture( state, lua_gettop( state ) );
-            }
-        }
-        else {
-            lua_getfield( state, index, "texture" );
-            if( lua_isstring( state, - 1 ) ) {
-                button->addTexture( state, lua_gettop( state ) );
-            }
-
-            lua_pop( state, 1 );
-        }
-
-        lua_getfield( state, index, "texts" );
-        if( lua_istable( state, - 1 ) ) {
-            for( lua_pushnil( state ); lua_next( state, - 2 ) != 0; lua_pop( state, 1 ) ) {
-                button->addText( state, lua_gettop( state ) );
-            }
-        }
-        else {
-            lua_getfield( state, index, "text" );
-            if( lua_istable( state, - 1 ) ) {
-                button->addText( state, lua_gettop( state ) );
-            }
-
-            lua_pop( state, 1 );
-        }
-
-        lua_getfield( state, index, "childs" );
-        if( lua_istable( state, - 1 ) ) {
-            for( lua_pushnil( state ); lua_next( state, - 2 ) != 0; lua_pop( state, 1 ) ) {
-                std::string type;
-                lWrapper::stringFromLuaTable( state, lua_gettop( state ), "type", type );
-
-
-                if( type == "default" ) {
-                    CGuiElement* temp = nullptr;
-
-                    temp = CGuiElement::setupFromTable( state, lua_gettop( state ), nullptr, button );
-
-                    if( temp != nullptr ) {
-                        button->addElement( temp );
-                    }
-                }
-                else if( type == "button" ) {
-                    CGuiButton* temp = nullptr;
-
-                    temp = CGuiButton::setupFromTable( state, lua_gettop( state ), nullptr, button );
-
-                    if( temp != nullptr ) {
-                        button->addElement( temp );
-                    }
-                }
-            }
-        }
-
-        /** Button specific */
-
+    if( success ) {
         bool locked = false;
         lWrapper::valueFromLuaTable<bool>( state, index, "locked", locked );
         button->setLocked( locked );
@@ -408,6 +333,10 @@ CGuiButton* CGuiButton::setupFromTable( lua_State* state, int index, bool* resul
             button->addButtonTexture( state, lua_gettop( state ) );
         }
 
+        bool selected = false;
+        lWrapper::valueFromLuaTable<bool>( state, index, "selected", selected );
+        button->setSelected( selected );
+
         std::string msg;
         std::string rMsg;
 
@@ -416,6 +345,25 @@ CGuiButton* CGuiButton::setupFromTable( lua_State* state, int index, bool* resul
 
         button->setMsg( msg );
         button->setRMsg( rMsg );
+
+        lua_getfield( state, index, "sounds" );
+        if( lua_istable( state, - 1 ) ) {
+            for( lua_pushnil( state ); lua_next( state, - 2 ) != 0; lua_pop( state, 1 ) ) {
+                // Copy key
+                lua_pushvalue( state, - 2 );
+
+                const std::string key = lua_tostring( state, - 1 );
+
+                lua_pop( state, 1 );
+
+                if( key == "onClick" ) {
+                    button->setSound( CGuiButton::ONCLICK, lua_tostring( state, - 1 ) );
+                }
+                else if( key == "onMouseover" ) {
+                    button->setSound( CGuiButton::ONMOUSEOVER, lua_tostring( state, - 1 ) );
+                }
+            }
+        }
 
         lua_getfield( state, index, "hotkeys" );
         if( lua_istable( state, - 1 ) ) {
@@ -451,7 +399,11 @@ CGuiButton* CGuiButton::setupFromTable( lua_State* state, int index, bool* resul
             }
         }
 
-        lua_pop( state, 9 );
+        lua_pop( state, 4 );
+    }
+
+    if( result != nullptr ) {
+        *result = success;
     }
 
     return button;
@@ -596,6 +548,32 @@ int CGuiButton::luaSetButtonTexture( lua_State* state ) {
     return 1;
 }
 
+int CGuiButton::luaSetSound( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    if( argc == 4 ) {
+        if( lua_islightuserdata( state, argc - 1 ) ) {
+            CGuiButton*     button  = (CGuiButton*)lua_touserdata( state, argc - 2 );
+            std::string     ID      = lua_tostring( state, argc - 1 );
+            ButtonSoundType type    = (ButtonSoundType)lua_tointeger( state, argc );
+
+            if( button != nullptr ) {
+                button->setSound( type, ID );
+            }
+        }
+        else {
+            std::cout << "Error: Unable to set sound to button. Light user data expected" << std::endl;
+        }
+    }
+    else {
+        std::cout << "Error: Unable to set sound to button. Wrong amount of arguments" << std::endl;
+    }
+
+    lua_pop( state, argc );
+
+    return 0;
+}
+
 int CGuiButton::luaSetLocked( lua_State* state ) {
     int argc = lua_gettop( state );
 
@@ -624,7 +602,7 @@ int CGuiButton::luaIsLocked( lua_State* state ) {
     bool result = false;
 
     if( argc == 2 ) {
-        CGuiButton* button = (CGuiButton*)lua_touserdata( state, argc - 1 );
+        CGuiButton* button = (CGuiButton*)lua_touserdata( state, argc );
 
         if( button->getType() == GuiType::GUI_BUTTON ) {
             result = button->isLocked();
@@ -718,6 +696,64 @@ int CGuiButton::luaSetPressOffset( lua_State* state ) {
     return 0;
 }
 
+int CGuiButton::luaSetSelected( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    if( argc == 3 ) {
+        CGuiButton* button = (CGuiButton*)lua_touserdata( state, argc - 1 );
+
+        if( button != nullptr ) {
+            if( button->getType() == GuiType::GUI_BUTTON ) {
+                button->setSelected( lua_toboolean( state, argc ) );
+            }
+            else {
+                std::cout   << "Error: Wrong gui element type. Expected "
+                            << CGuiElement::guiTypeToString( GuiType::GUI_BUTTON )
+                            << ", got: " << CGuiElement::guiTypeToString( button->getType() )
+                            << std::endl;
+            }
+        }
+        else {
+            std::cout << "Error: Got nullptr" << std::endl;
+        }
+    }
+
+    lua_pop( state, argc );
+
+    return 0;
+}
+
+int CGuiButton::luaIsSelected( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    bool result = false;
+
+    if( argc == 2 ) {
+        CGuiButton* button = (CGuiButton*)lua_touserdata( state, argc );
+
+        if( button != nullptr ) {
+            if( button->getType() == GuiType::GUI_BUTTON ) {
+                result = button->isSelected();
+            }
+            else {
+                std::cout   << "Error: Wrong gui element type. Expected "
+                            << CGuiElement::guiTypeToString( GuiType::GUI_BUTTON )
+                            << ", got: " << CGuiElement::guiTypeToString( button->getType() )
+                            << std::endl;
+            }
+        }
+        else {
+            std::cout << "Error: Got nullptr" << std::endl;
+        }
+    }
+
+    lua_pop( state, argc );
+
+    lua_pushboolean( state, result );
+
+    return 1;
+}
+
 /** PRIVATE */
 
 bool CGuiButton::isHotkey( const sf::Keyboard::Key& hotkey ) {
@@ -731,7 +767,7 @@ bool CGuiButton::isHotkey( const sf::Keyboard::Key& hotkey ) {
 }
 
 CSpriteWrapper* CGuiButton::getSprite( size_t ID ) {
-    if( m_spriteButtonID != 0 ) {
+    if( ID != 0 ) {
         for( auto& it : m_sprites ) {
             if( it.getID() == ID ) {
                 return &it;
@@ -761,4 +797,8 @@ void CGuiButton::resetPressOffset() {
             it.resetClip();
         }
     }
+}
+
+void CGuiButton::playSound( ButtonSoundType type ) {
+    CGame::AudioSystem.playSound( m_sounds[ type ], CAudioSystem::INTERFACE );
 }

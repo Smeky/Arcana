@@ -100,10 +100,10 @@ void CCharacter::performAttack( float angle ) {
     lua_pushinteger( state, m_modStats.damageMax );
     lua_setfield( state, statIndex, "dmgMax" );
 
-    lua_pushinteger( state, m_modStats.critChance );
+    lua_pushnumber( state, m_modStats.critChance );
     lua_setfield( state, statIndex, "critChance" );
 
-    lua_pushinteger( state, m_modStats.critMultip );
+    lua_pushnumber( state, m_modStats.critMultip );
     lua_setfield( state, statIndex, "critMultip" );
 
     lua_pushinteger( state, (int)m_faction );
@@ -125,18 +125,23 @@ void CCharacter::performAttack( float angle ) {
 }
 
 void CCharacter::takeDamage( size_t sourceID, int damage, DamageType type ) {
-    // Work in progress - variable to recalculate damage ( reductions, etc. )
-    int recalculatedDamage = damage;
-
     for( auto it : m_effectsEvent[ (int)EffectEventType::EEVENT_ONDMG ] ) {
-        it->onEventAction( 2, sourceID, recalculatedDamage );
+//        CScriptSystem::ArgType args[ 2 ];
+//        args[ 0 ] = CScriptSystem::ARG_INT;
+//        args[ 1 ] = CScriptSystem::ARG_INT;
+
+        it->onEventAction( CGame::EntitySystem.getEntityByID( sourceID ), damage );
     }
 
-    CGame::WorldManager.CombatTextSystem.createCombatText( sf::Vector2f( getCenter().x, m_pos.y ), recalculatedDamage, CombatTextType::COMBATTEXT_DMGNORMAL );
-
-    if( !m_health.remove( recalculatedDamage ) || m_health.isEmpty() ) {
+    if( !m_health.remove( damage ) || m_health.isEmpty() ) {
         m_despawn = true;
     }
+}
+
+int CCharacter::calculateReductions( int damage ) {
+    // Temporary empty, no reductions are implemented yet
+
+    return damage;
 }
 
 void CCharacter::setBaseStats( const CharacterStats& stats ) {
@@ -253,8 +258,8 @@ void CCharacter::updateStats() {
     m_stats[ 16 ].setBase( m_expFactor );
 
     /** Dependent stats */
-    m_health.setMaximum(    m_stats[ 0 ].getResult() );
-    m_resource.setMaximum(  m_stats[ 1 ].getResult() );
+    m_health.setMaximumFactor(    m_stats[ 0 ].getResult() );
+    m_resource.setMaximumFactor(  m_stats[ 1 ].getResult() );
 
     m_modStats.regenHealth      = m_stats[ 7 ].getResult();
     m_modStats.regenResource    = m_stats[ 8 ].getResult();
@@ -325,12 +330,14 @@ size_t CCharacter::getLevel() const {
 
 void CCharacter::setMaxHealth( int maximum ) {
     m_health.setMaximum( maximum );
+    m_health.setCurrent( maximum );
 
     setupStats();
 }
 
 void CCharacter::setMaxResource( int maximum ) {
     m_resource.setMaximum( maximum );
+    m_resource.setCurrent( maximum );
 
     setupStats();
 }

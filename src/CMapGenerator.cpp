@@ -43,12 +43,6 @@ CMap* CMapGenerator::createFromLuaTable( lua_State* state, int index ) {
         map = generateMap( tilesetID, size );
     }
 
-//    // Create map objects
-//    lua_getfield( state, index, "objects" );
-//    if( !lua_isnil( state, - 1 ) ) {
-//        createObjects( state, lua_gettop( state ) );
-//    }
-
     lua_pop( state, 3 );
 
     return map;
@@ -301,45 +295,6 @@ CMap* CMapGenerator::generateMap( const std::string& tilesetID, const sf::Vector
     map->setSize( Util::multiplyVectors<float>( mapSize, tileSize ) );
 
     return map;
-}
-
-void CMapGenerator::createObjects( lua_State* state, int index ) {
-    assert( lua_istable( state, index ) );
-
-    for( lua_pushnil( state ); lua_next( state, index ) != 0; lua_pop( state, 1 ) ) {
-        size_t minAmount    = 1;
-        size_t maxAmount    = 0;
-
-        // Get minimum amount of objects
-        lua_getfield( state, - 1, "min" );
-        if( lua_isinteger( state, - 1 ) ) {
-            minAmount   = lua_tointeger( state, - 1 );
-        }
-
-        // Get maximum amount of objects
-        lua_getfield( state, - 2, "max" );
-        if( lua_isinteger( state, - 1 ) ) {
-            maxAmount   = lua_tointeger( state, - 1 );
-        }
-
-        // Get object table
-        lua_getfield( state, - 3, "table" );
-        assert( lua_istable( state, - 1 ) );
-
-        size_t amount = minAmount;
-
-        // If there is maximum amount -> Randomize amount
-        if( maxAmount != 0 ) {
-            amount = CRNG::iRandom( minAmount, maxAmount );
-        }
-
-        // Spawn objects
-        for( ; amount > 0; amount-- ) {
-            CGame::EntitySystem.objectFromLuaTable( state, lua_gettop( state ) );
-        }
-
-        lua_pop( state, 3 );
-    }
 }
 
 int CMapGenerator::countAlives( doubleVecBool alives, const sf::Vector2u& index, const sf::Vector2f& mapSize ) {

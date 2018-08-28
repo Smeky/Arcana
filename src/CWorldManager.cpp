@@ -11,6 +11,7 @@
 #include "Utility.h"
 #include <LuaWrapper.h>
 #include <CRNG.h>
+#include <CMapGen.h>
 
 #include "iostream"
 using namespace std;
@@ -32,6 +33,8 @@ void CWorldManager::close() {
 
 void CWorldManager::update( const sf::Time& delta ) {
     if( CGame::SceneID != 2 || m_paused ) return;
+
+    m_worldTime += delta;
 
     CGame::SpatialSystem.clearGrid();
     CGame::ZBuffer.clean();
@@ -83,14 +86,16 @@ size_t CWorldManager::createMap( lua_State* state, int index ) {
     m_paused    = false;
 
     CGame::EntitySystem.cleanUp();
+    CGame::WorldManager.ParticleSystem.close();
 
     size_t ID = 0;
 
     lua_getfield( state, index, "map" );
     if( lua_istable( state, - 1 ) ) {
-        CMapGenerator generator = CMapGenerator();
+//        CMapGenerator generator = CMapGenerator();
 
-        CMap* map = generator.createFromLuaTable( state, lua_gettop( state ) );
+//        CMap* map = generator.createFromLuaTable( state, lua_gettop( state ) );
+        CMap* map = CMapGen::generateMap( state, lua_gettop( state ) );
 
         if( map != nullptr ) {
             ID = addMap( map );
@@ -140,6 +145,9 @@ size_t CWorldManager::createMap( lua_State* state, int index ) {
     }
 
     lua_pop( state, 2 );
+
+
+    CGame::PathFinder.setup();
 
     return ID;
 }
@@ -196,6 +204,11 @@ sf::Vector2f CWorldManager::getMapSize() const {
     if( !m_maps.empty() ) {
         return m_maps.back()->getSize();
     }
+    #ifdef DEBUG
+    else {
+        std::cout << "[D]Warning: Trying to get map size but maps are empty" << std::endl;
+    }
+    #endif // DEBUG
 
     return sf::Vector2f();
 }
@@ -204,6 +217,10 @@ CMap* CWorldManager::getCurrentlyUsedMap() const {
     assert( !m_maps.empty() && "Trying to return map that doesn't exist" );
 
     return m_maps.back();
+}
+
+sf::Time CWorldManager::getWorldTime() const {
+    return m_worldTime;
 }
 
 void CWorldManager::pauseGame() {
@@ -268,6 +285,52 @@ int CWorldManager::luaEnterMap( lua_State* state ) {
     lua_pushboolean( state, result );
 
     return 1;
+}
+
+int CWorldManager::luaSetCameraPos( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    sf::Vector2f    pos;
+
+    if( argc == 2 ) {
+        pos     = Util::vectorFromTable<float>( state, argc );
+    }
+    else if( argc == 3 ) {
+        pos.x   = lua_tonumber( state, - 2 );
+        pos.y   = lua_tonumber( state, - 1 );
+    }
+    else {
+        std::cout << "Error: Unable to set camera position. Wrong amount of arguments" << std::endl;
+    }
+
+    CGame::WorldManager.Camera.setPos( pos );
+
+    lua_pop( state, argc );
+
+    return 0;
+}
+
+int CWorldManager::luaSetCameraCenter( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    sf::Vector2f    center;
+
+    if( argc == 2 ) {
+        center      = Util::vectorFromTable<float>( state, argc );
+    }
+    else if( argc == 3 ) {
+        center.x    = lua_tonumber( state, - 2 );
+        center.y    = lua_tonumber( state, - 1 );
+    }
+    else {
+        std::cout << "Error: Unable to set camera center. Wrong amount of arguments" << std::endl;
+    }
+
+    CGame::WorldManager.Camera.setCenter( center );
+
+    lua_pop( state, argc );
+
+    return 0;
 }
 
 int CWorldManager::luaSetCameraSize( lua_State* state ) {
@@ -348,6 +411,16 @@ int CWorldManager::luaCameraGetOffset( lua_State* state ) {
     return 2;
 }
 
+int CWorldManager::luaGetWorldTime( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    lua_pop( state, argc );
+
+    lua_pushnumber( state, CGame::WorldManager.getWorldTime().asSeconds() );
+
+    return 1;
+}
+
 int CWorldManager::luaPauseGame( lua_State* state ) {
     int argc = lua_gettop( state );
 
@@ -377,6 +450,20 @@ int CWorldManager::luaDisplaySpatialSystem( lua_State* state ) {
     lua_pop( state, argc );
 
     CGame::WorldManager.displaySpatialSystem();
+
+    return 0;
+}
+
+int CWorldManager::luaDisplayMapGrid( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    lua_pop( state, argc );
+
+    CMap* map = CGame::WorldManager.getCurrentlyUsedMap();
+
+    if( map != nullptr ) {
+        map->debugDisplayGrid();
+    }
 
     return 0;
 }

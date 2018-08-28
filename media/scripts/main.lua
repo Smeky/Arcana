@@ -92,10 +92,4 @@ function copyTable( orig )
     return copy
 end
 
--- Closes the game, used by buttons
-function closeGame()
-	myCore:closeGame()
-end
-
-register( "GuiButtonMenuExit",	closeGame )
 register( "Update",				update )

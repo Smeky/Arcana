@@ -65,6 +65,8 @@ function initAbilitybar()
 	elseif charSelectionIndex == 6	then bgTexture = "GUI_TRACK_RESOURCE_LIFEENERGY_BG"; 	manager.texture = "GUI_TRACK_RESOURCE_LIFEENERGY_PROG";
 	end
 	
+	manager.expTexture	= "GUI_EXPBAR_FRONT"
+	
 	Window_Abilitybar = myGui:newElement( {
 		pos			= { ( GameWindow_W - window_W ) / 2, GameWindow_H - window_H };
 		size		= { window_W, window_H };
@@ -131,6 +133,17 @@ function initAbilitybar()
 			"GUI_TRACK_FRONT";
 		};
 	} )
+	
+	-- Experience bar
+	manager.expBar = myGui:newElement( Window_Abilitybar, {
+		size		= { 449, 14 };
+		relPos		= { 125, 31 };
+		
+		textures	= {
+			"GUI_EXPBAR_BG";
+			manager.expTexture;
+		};
+	} )
 
 	for i = 1, 4, 1 do
 		manager.abButtons[ i ] = myGui:newButton( Window_Abilitybar, {
@@ -174,6 +187,10 @@ function resetAbilitybar()
 	manager.hpPrevCur	= nil
 	manager.rpPrevMax	= nil
 	manager.rpPrevCur	= nil
+	manager.expBar		= nil
+	manager.expTexture	= nil
+	manager.expPrevMax	= nil
+	manager.expPrevCur	= nil
 	manager.abButtons	= {}
 	manager.abTextures	= {}
 	manager.abilities	= {}
@@ -181,7 +198,6 @@ function resetAbilitybar()
 end
 
 local function newAbility( index )
-
 	if index ~= nil then
 		if manager.player == nil then
 			if isTableEmpty( manager.buffer ) then 
@@ -278,6 +294,29 @@ local function update()
 			-- Store new resource
 			manager.rpPrevMax = rpNewMax
 			manager.rpPrevCur = rpNewCur
+		end
+		
+		-- Store players experience
+		local expMax, expCur	= myEntity:getExperience( manager.player )
+		
+		-- Update experience bar
+		if expMax ~= manager.expPrevMax or expCur ~= manager.expPrevCur then
+			-- Calculate factor of current experience
+			local factor 	= expCur / expMax
+			-- Store proggress bar textures size
+			local tW, tH 	= myAssets:getTextureSize( manager.expTexture )
+		
+			-- Set progress bar texture with correct clip, size and position
+			myGui:setTexture( manager.expBar, {
+				pos			= { 0, 0 };
+				size		= { tW * factor, tH };
+				texture		= manager.expTexture;
+				clip		= { 0, 0, tW * factor, tH };
+			}, 0 )
+			
+			-- Store new experience
+			manager.expPrevMax = expMax
+			manager.expPrevCur = expCur
 		end
 	end
 end

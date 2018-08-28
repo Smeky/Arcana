@@ -12,11 +12,19 @@
 
 #include <CGuiElement.h>
 #include <CGuiButton.h>
+#include <CGuiCheckbox.h>
+#include <CGuiSlider.h>
+#include <CGuiDropbox.h>
 
 #include "iostream"
 using namespace std;
 
 std::unordered_map<std::string,std::vector<size_t>> CScriptSystem::s_events;
+
+CScriptSystem::CScriptSystem()
+: m_funcIDCounter   ( 1 )
+{}
+
 
 void CScriptSystem::update() {
     if( m_reloadScrip ) {
@@ -44,6 +52,7 @@ void CScriptSystem::prepareLuaState() {
 
 	luaL_Reg coreFuncs[] =
 	{
+		{ "setupWindow",        CGame::luaSetupWindow },
 		{ "closeGame",          CGame::luaCloseGame },
 		{ "getWindowSize",      CGame::luaGetWindowSize },
 		{ "getGameTime",        CGame::luaGetGameTime },
@@ -52,6 +61,10 @@ void CScriptSystem::prepareLuaState() {
 		{ "loadScript",         CGame::luaLoadScript },
 		{ "sendMessage",        CGame::luaSendMsg },
 		{ "sendDelayedMessage", CGame::luaSendDelayMsg },
+
+		/** Settings */
+		{ "getSettings",        CGame::SettingsManager.luaGetSettings },
+		{ "updateSettings",     CGame::SettingsManager.luaUpdateSettings },
 
 		{ NULL, NULL }
 	};
@@ -62,12 +75,34 @@ void CScriptSystem::prepareLuaState() {
 	{
 		{ "loadTexture",        CAssetManager::luaLoadTexture },
 		{ "loadFont",           CAssetManager::luaLoadFont },
+		{ "loadSound",          CAssetManager::luaLoadSound },
 		{ "getTextureSize",     CAssetManager::luaGetTextureSize },
 
 		{ NULL, NULL }
 	};
 
 	registerGlobalObject( "Assets", assetFuncs );
+
+	luaL_Reg audioFuncs[] =
+	{
+		{ "stopAll",            CGame::AudioSystem.luaStopAll },
+		{ "pauseAll",           CGame::AudioSystem.luaPauseAll },
+		{ "resumeAll",          CGame::AudioSystem.luaResumeAll },
+		{ "setVolume",          CGame::AudioSystem.luaSetVolume },
+		{ "getVolume",          CGame::AudioSystem.luaGetVolume },
+		{ "setEnabled",         CGame::AudioSystem.luaSetEnabled },
+		{ "reverseEnabled",     CGame::AudioSystem.luaReverseEnabled },
+		{ "isEnabled",          CGame::AudioSystem.luaIsEnabled },
+		{ "playSound",          CGame::AudioSystem.luaPlaySound },
+		{ "stopMusic",          CGame::AudioSystem.luaStopMusic },
+		{ "playMusic",          CGame::AudioSystem.luaPlayMusic },
+		{ "pauseMusic",         CGame::AudioSystem.luaPauseMusic },
+		{ "loadMusic",          CGame::AudioSystem.luaLoadMusic },
+
+		{ NULL, NULL }
+	};
+
+	registerGlobalObject( "Audio", audioFuncs );
 
 	luaL_Reg inputFuncs[] =
 	{
@@ -118,6 +153,9 @@ void CScriptSystem::prepareLuaState() {
         // New element, interface system
         { "newElement",         CGame::InterfaceSystem.luaNewElement },
         { "newButton",          CGame::InterfaceSystem.luaNewButton },
+        { "newCheckbox",        CGame::InterfaceSystem.luaNewCheckbox },
+        { "newSlider",          CGame::InterfaceSystem.luaNewSlider },
+        { "newDropbox",         CGame::InterfaceSystem.luaNewDropbox },
 
         // New element, element pos / size
         { "setPos",             CGuiElement::luaSetPos },
@@ -154,10 +192,35 @@ void CScriptSystem::prepareLuaState() {
         { "addHotkey",          CGuiButton::luaAddHotkey },
         { "setMsg",             CGuiButton::luaSetMsg },
         { "setRightMsg",        CGuiButton::luaSetRMsg },
+        { "setSound",           CGuiButton::luaSetSound },
         { "setPressOffset",     CGuiButton::luaSetPressOffset },
         { "setLocked",          CGuiButton::luaSetLocked },
         { "isLocked",           CGuiButton::luaIsLocked },
+        { "setSelected",        CGuiButton::luaSetSelected },
+        { "isSelected",         CGuiButton::luaIsSelected },
+
         { "addButtonFunction",  CGuiButton::luaAddFunction },
+
+        // Checkbox
+        { "addCheckboxTexture", CGuiCheckbox::luaAddButtonTexture },
+        { "setCheckboxTexture", CGuiCheckbox::luaSetButtonTexture },
+        { "addCheckTexture",    CGuiCheckbox::luaAddCheckTexture },
+        { "setCheckTexture",    CGuiCheckbox::luaSetCheckTexture },
+        { "setChecked",         CGuiCheckbox::luaSetChecked },
+        { "isChecked",          CGuiCheckbox::luaIsChecked },
+
+        // Slider
+        { "addSliderTexture",   CGuiSlider::luaAddSliderTexture },
+        { "setSliderTexture",   CGuiSlider::luaSetSliderTexture },
+        { "setOrientation",     CGuiSlider::luaSetOrientation },
+        { "setSliderRange",     CGuiSlider::luaSetRange },
+        { "setSliderValue",     CGuiSlider::luaSetValue },
+        { "getSliderValue",     CGuiSlider::luaGetValue },
+
+        //
+        { "addDropElement",     CGuiDropbox::luaAddDropElement },
+        { "setDropSelectIndex", CGuiDropbox::luaSetSelected },
+        { "getDropSelectIndex", CGuiDropbox::luaGetSelected },
 
 		{ NULL, NULL }
 	};
@@ -167,6 +230,8 @@ void CScriptSystem::prepareLuaState() {
 	luaL_Reg worldFuncs[] =
 	{
 		{ "close",              CGame::WorldManager.luaClose },
+		{ "setCameraPos",       CGame::WorldManager.luaSetCameraPos },
+		{ "setCameraCenter",    CGame::WorldManager.luaSetCameraCenter },
 		{ "setCameraSize",      CGame::WorldManager.luaSetCameraSize },
 		{ "getCameraPos",       CGame::WorldManager.luaGetCameraPos },
 		{ "createMap",          CGame::WorldManager.luaCreateMap },
@@ -174,10 +239,12 @@ void CScriptSystem::prepareLuaState() {
 		{ "loadUpgrades",       CGame::UpgradeManager.luaLoad },
 		{ "setupUpgrades",      CGame::UpgradeManager.luaSetup },
 
+		{ "getWorldTime",       CGame::WorldManager.luaGetWorldTime },
 		{ "pauseGame",          CGame::WorldManager.luaPauseGame },
 		{ "isGamePaused",       CGame::WorldManager.luaIsGamePaused },
 
 		{ "displaySS",          CGame::WorldManager.luaDisplaySpatialSystem },      // Display spatial system
+		{ "displayMapGrid",     CGame::WorldManager.luaDisplayMapGrid },
 		{ "displayEntityBox",   CGame::EntitySystem.luaDisplayEntityBox },
 		{ "displayEntityStat",  CGame::EntitySystem.luaDisplayEntityStat },
 
@@ -245,6 +312,7 @@ void CScriptSystem::prepareLuaState() {
         { "setCenter",          CGame::EntitySystem.luaSetCenter },
         { "setSize",            CGame::EntitySystem.luaSetSize },
         { "setPosSize",         CGame::EntitySystem.luaSetPosSize },
+        { "setPosRandom",       CGame::EntitySystem.luaSetPosRandom },
 
         /** Dimension get */
         { "getPos",             CGame::EntitySystem.luaGetPos },
@@ -259,6 +327,7 @@ void CScriptSystem::prepareLuaState() {
         /** Characters */
         { "getHealth",          CGame::EntitySystem.luaGetHealth },
         { "getResource",        CGame::EntitySystem.luaGetResource },
+        { "getExperience",      CGame::EntitySystem.luaGetExperience },
         { "getCharacterStats",  CGame::EntitySystem.luaGetCharacterStats },
         { "addAbility",         CGame::EntitySystem.luaAddAbility },
         { "setAbility",         CGame::EntitySystem.luaSetAbility },
@@ -274,6 +343,7 @@ void CScriptSystem::prepareLuaState() {
         { "getNearby",          CGame::EntitySystem.luaGetNearby },
         { "getNearbyChars",     CGame::EntitySystem.luaGetNearbyChars },
         { "isPosFree",          CGame::EntitySystem.luaIsPosFree },
+
 
         /** Colors */
         { "setColor",           CGame::EntitySystem.luaSetColor },
@@ -416,12 +486,12 @@ void CScriptSystem::fireEventWithString( const std::string& eventID, int argc, .
 }
 
 void CScriptSystem::fireEventWithInt( const std::string& eventID, int argc, ... ) {
-    va_list valist;
-
-    va_start( valist, argc );
 
     if( !s_events[ eventID ].empty() ) {
 		for ( size_t i = 0; i < s_events[ eventID ].size(); i++ ) {
+            va_list valist;
+
+            va_start( valist, argc );
 
 			// Check Lua's registry for the function name
 			lua_rawgeti( m_luaState, LUA_REGISTRYINDEX, s_events[ eventID ][ i ] );
@@ -447,10 +517,10 @@ void CScriptSystem::fireEventWithInt( const std::string& eventID, int argc, ... 
 				// Clean the stack
 				lua_pop( m_luaState, 1 );
 			}
+
+			va_end( valist );
 		}
 	}
-
-    va_end( valist );
 }
 
 void CScriptSystem::fireEventWithTable( const std::string& eventID, int index ) {
@@ -478,6 +548,65 @@ void CScriptSystem::fireEventWithTable( const std::string& eventID, int index ) 
 			}
 		}
 	}
+}
+
+size_t CScriptSystem::registerFunc() {
+    int functionRef = luaL_ref( m_luaState, LUA_REGISTRYINDEX );
+
+    size_t ID = getNewID();
+
+    m_funcs[ ID ].push_back( functionRef );
+
+    return ID;
+}
+
+void CScriptSystem::callFunc( size_t ID ) {
+
+}
+
+void CScriptSystem::callFunc( size_t ID, ArgType type[], int argc, ... ) {
+    // ID 0 is default value, not used
+    if( ID == 0 ) return;
+
+    if( !m_funcs[ ID ].empty() ) {
+        for( int i : m_funcs[ ID ] ) {
+            // Get function by it's ID
+            lua_rawgeti( m_luaState, LUA_REGISTRYINDEX, i );
+
+            va_list valist;
+            va_start( valist, argc );
+
+            // Check if function was found
+            if( lua_isfunction( m_luaState, - 1 ) ) {
+                if( argc > 0 ) {
+                    for( int i = 0; i < argc; i++ ) {
+                        switch( type[ i ] ) {
+                        case ArgType::ARG_INT:      lua_pushinteger( m_luaState, va_arg( valist, int ) ); break;
+                        case ArgType::ARG_FLOAT:    lua_pushnumber( m_luaState, va_arg( valist, double ) ); break;
+                        case ArgType::ARG_BOOL:     lua_pushboolean( m_luaState, va_arg( valist, int ) ); break;
+                        case ArgType::ARG_STRING:   lua_pushstring( m_luaState, va_arg( valist, const char* ) ); break;
+                        case ArgType::ARG_LUD:      lua_pushlightuserdata( m_luaState, va_arg( valist, void* ) ); break;
+                        default: break;
+                        }
+                    }
+                }
+
+                // Call the function and store the result
+                int result = lua_pcall( m_luaState, argc, LUA_MULTRET, 0 );
+
+                // If there was a problem, print it
+                if( result != LUA_OK ) {
+                    std::cout << "Error: " << lua_tostring( m_luaState, - 1 ) << std::endl;
+                }
+            }
+            else {
+                // If function was not found, clean up
+                lua_pop( m_luaState, 1 );
+            }
+
+            va_end( valist );
+        }
+    }
 }
 
 int CScriptSystem::registerEvent( lua_State* luaState ) {
@@ -549,73 +678,6 @@ void CScriptSystem::goTroughTable() {
 	lua_pop( m_luaState, 1 );
 }
 
-void CScriptSystem::getFieldsFromTable( lua_State *state, int index, const char *fields, ... ) {
-    va_list arguments;
-
-    // Allocate room for and make an editable copy of fields
-    char* tempField = (char*)malloc( strlen( fields ) + 1 );
-    strcpy( tempField, fields );
-
-    const size_t MAX_TOKENS = 25;
-    size_t count = 0;
-
-    char* tokens[ MAX_TOKENS ];
-
-    // Tokenise tempField by ' ' delimiter
-    for( char* p = strtok( tempField, " " ); p != nullptr; p = strtok( NULL, " " ) ) {
-            if( count >= MAX_TOKENS ) {
-                break;
-            }
-
-            tokens[ count++ ] = p;
-    }
-
-    // Total amount of arguments calculated from string
-    va_start( arguments, count );
-
-    // Loop through fields
-    for( size_t i = 0; i < count; i++ ) {
-        // Push the field onto the stack
-        lua_getfield( state, index, tokens[ i ] );
-
-        // Get the type of the field on top of the stack */
-        int fieldType = lua_type( state, - 1 );
-
-        if( fieldType == LUA_TNUMBER ) {
-            float number = lua_tonumber( state, - 1 );
-
-            // Check for whole number
-            if( fmod( number, 1 ) == 0 ) {
-                *va_arg( arguments, int* ) = number;
-            }
-            else {
-                *va_arg( arguments, float* ) = number;
-                cout << "Util: " << number << endl;
-            }
-        }
-        else if( fieldType == LUA_TBOOLEAN ) {
-            *va_arg( arguments, bool* ) = lua_toboolean( state, - 1 );
-        }
-        else if( fieldType == LUA_TTABLE ) {
-            *va_arg( arguments, int* ) = lua_gettop( state );
-        }
-        else if (fieldType == LUA_TSTRING) {
-            *va_arg( arguments, const char** ) = lua_tostring( state, - 1 );
-        }
-        else if( fieldType == LUA_TNIL ) {
-            va_arg( arguments, int );
-        }
-
-        // Keep tables on the stack so they can be called recursively
-        if( fieldType != LUA_TTABLE ) {
-            lua_pop( state, 1 );
-        }
-    }
-
-    // Free previously allocated memory
-    free(tempField);
-}
-
 lua_State* CScriptSystem::getState() {
     return m_luaState;
 }
@@ -635,4 +697,12 @@ void CScriptSystem::registerGlobalObject( const std::string& objectName, luaL_Re
 
 	// Push the object into Lua's global space
 	lua_setglobal( m_luaState, objectName.c_str() );
+}
+
+/** PRIVATE */
+
+size_t CScriptSystem::getNewID() {
+    m_funcIDCounter++;
+
+    return m_funcIDCounter - 1;
 }

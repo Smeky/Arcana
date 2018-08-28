@@ -5,6 +5,9 @@
 #include "SFML/System/Time.hpp"
 
 class CCombatText;
+class CCharacter;
+
+enum class DamageType : int;
 
 enum class CombatTextType : int {
     COMBATTEXT_DMGNORMAL,
@@ -27,6 +30,7 @@ public:
     void            render              ( sf::RenderTarget& window, sf::RenderStates states ) const;
 
     void            createCombatText    ( const sf::Vector2f& pos, int number, CombatTextType type );
+    void            createCombatText    ( const CCharacter* character, int number, DamageType type );
 
 private:
     CombatTexts     m_combatTexts;

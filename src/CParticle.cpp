@@ -54,6 +54,9 @@ void CParticle::setData( const ParticleData& data ) {
     if( m_data.opacityType == ParticleOpType::POPACITY_TOFULL ) {
         m_opacity   = 0;
     }
+    else {
+        m_opacity   = 255;
+    }
 
     calcVertexes();
     calcColor();

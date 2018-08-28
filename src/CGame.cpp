@@ -1,10 +1,14 @@
 #include "CGame.h"
 
+#define GAMETILE "Arcana"
+
 #include "cassert"
 #include "typeinfo"
 
 #include "CRNG.h"
 #include <CEntity.h>
+
+#include <SFML/Audio.hpp>
 
 #include "iostream"
 using namespace std;
@@ -15,23 +19,30 @@ CMessageSystem      CGame::MessageSystem;
 CEntitySystem       CGame::EntitySystem;
 CSceneManager       CGame::SceneManager;
 CAssetManager       CGame::AssetManager;
+CSettingManager     CGame::SettingsManager;
 CWorldManager       CGame::WorldManager;
 CSpatialSystem      CGame::SpatialSystem;
 CZBuffer            CGame::ZBuffer;
 CAbilityManager     CGame::AbilityManager;
 CEffectManager      CGame::EffectManager;
 CUpgradeManager     CGame::UpgradeManager;
+CAudioSystem        CGame::AudioSystem;
+CPathFinder         CGame::PathFinder;
 
 sf::RenderWindow    CGame::GameWindow;
 sf::Clock           CGame::GameClock;
-size_t              CGame::SceneID;
+size_t              CGame::SceneID              = 0;
 
-bool                CGame::m_changeScene;
+bool                CGame::m_changeScene        = false;
+
+CGame::CGame()
+{}
 
 bool CGame::init() {
     setupWindow();
 
     ScriptSystem.prepareLuaState();
+    SettingsManager.init();
 
     ScriptSystem.fireEvent( "GameInit" );
 
@@ -48,6 +59,8 @@ bool CGame::init() {
 
 void CGame::close() {
     GameWindow.close();
+
+    AudioSystem.stopAll();
 }
 
 void CGame::run() {
@@ -104,9 +117,13 @@ int CGame::luaGetGameTime( lua_State* state ) {
 int CGame::luaChangeScene( lua_State* state ) {
     int argc = lua_gettop( state );
 
-    CGame::SceneID = lua_tonumber( state, lua_gettop( state ) );
-
-    CGame::m_changeScene = true;
+    if( argc == 2 ) {
+        CGame::SceneID = lua_tointeger( state, lua_gettop( state ) );
+        CGame::m_changeScene = true;
+    }
+    else {
+        std::cout << "Error: Unable to change scene. Wrong amount of arguments" << std::endl;
+    }
 
     lua_pop( state, argc );
 
@@ -167,13 +184,33 @@ int CGame::luaSendDelayMsg( lua_State* state ) {
     return 0;
 }
 
+int CGame::luaSetupWindow( lua_State* state ) {
+    int argc = lua_gettop( state );
+
+    if( argc == 4 ) {
+        size_t      width   = lua_tointeger( state, argc - 2 );
+        size_t      height  = lua_tointeger( state, argc - 1 );
+
+        int         style   = lua_tointeger( state, argc );
+
+        GameWindow.create( sf::VideoMode( width, height ), GAMETILE, style );
+    }
+    else {
+        std::cout << "Error: Unable to setup window. Wrong amount of arguments" << std::endl;
+    }
+
+    lua_pop( state, argc );
+
+    return 0;
+}
+
 /** LUA FUNCTIONS END */
 
 void CGame::setupWindow() {
     GameWindow.create( sf::VideoMode( 1280, 724 ), "Arcana", sf::Style::Close );
 //    GameWindow.create( sf::VideoMode( 1680, 1024 ), "Arcana", sf::Style::Close );
     GameWindow.setKeyRepeatEnabled( false );
-//    GameWindow.setFramerateLimit( 120 );
+    GameWindow.setFramerateLimit( 120 );
 }
 
 void CGame::handleInput() {
@@ -196,7 +233,11 @@ void CGame::handleInput() {
 }
 
 void CGame::update() {
+    if( !GameWindow.isOpen() ) return;
+
     sf::Time delta = m_loopClock.restart();
+
+    AudioSystem.update();
 
     if( GameWindow.hasFocus() ) {
         MessageSystem.update( delta );
@@ -224,6 +265,8 @@ void CGame::render() {
     InterfaceSystem.render( GameWindow, states );
 
     m_displayStats.render( GameWindow, states );
+
+//    PathFinder.render();
 
     GameWindow.display();
 }
